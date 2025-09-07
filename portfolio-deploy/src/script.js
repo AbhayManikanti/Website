@@ -135,7 +135,7 @@ class AnimationController {
 class ChatBot {
     constructor() {
         this.isOpen = false;
-        this.apiUrl = 'https://aichat-backend-z4sj.onrender.com/ask';
+        this.apiUrl = 'https://fastapi-backend-925151288978.asia-southeast1.run.app/ask';
         this.init();
     }
 
