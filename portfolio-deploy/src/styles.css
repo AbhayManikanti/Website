@@ -316,6 +316,9 @@ body {
     opacity: 1;
     z-index:1;
     animation: float 6s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .floating-card {
@@ -1231,6 +1234,11 @@ body {
         gap: 40px;
     }
     
+    .about-image {
+        justify-content: center;
+        margin-top: 24px;
+    }
+    
     .contact-content {
         grid-template-columns: 1fr;
         gap: 40px;
@@ -1239,17 +1247,63 @@ body {
     .chatbot-container {
         width: 340px;
     }
+
+    /* Fix for hero visual cropping */
+    .hero-visual {
+        height: auto;
+        min-height: 300px;
+        margin-bottom: 24px;
+    }
+    .hero-shape {
+        width: 250px;
+        height: 250px;
+    }
+    .project-img2 {
+        width: 100%;
+        max-width: 220px;
+        height: auto;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 1rem;
+        opacity: 1 !important;
+        filter: none !important;
+        background: none;
+        display: block;
+        margin: 0 auto;
+    }
 }
 
 @media (max-width: 768px) {
     .nav-menu {
         display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100vw;
+        background: rgba(255,255,255,0.97);
+        box-shadow: var(--shadow-lg);
+        z-index: 999;
+        padding: 32px 0;
+        gap: 24px;
+        transition: var(--transition);
+        border-bottom: 1px solid var(--neutral-200);
     }
-    
-    .hamburger {
+    .nav-menu.active {
         display: flex;
     }
-    
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+    }
+    .hamburger {
+        display: flex;
+        z-index: 1001;
+    }
+
     .container {
         padding: 0 16px;
     }
@@ -1304,6 +1358,40 @@ body {
     .chat-notification {
         right: 16px;
     }
+
+    /* Hero Visual and About Image mobile fix */
+    .hero-visual {
+        height: auto;
+        min-height: 200px;
+        margin-bottom: 24px;
+    }
+    .hero-shape {
+        width: 180px;
+        height: 180px;
+        margin: 0 auto;
+    }
+    .project-img2 {
+        width: 100%;
+        max-width: 150px;
+        height: auto;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 1rem;
+        opacity: 1 !important;
+        filter: none !important;
+        background: none;
+        display: block;
+        margin: 0 auto;
+    }
+    .about-image .project-img {
+        width: 100%;
+        max-width: 220px;
+        height: auto;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        display: block;
+        margin: 0 auto;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1341,6 +1429,19 @@ body {
     
     .contact-card, .cta-card {
         padding: 24px;
+    }
+    .hero-shape {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
+    }
+    .project-img2 {
+        width: 100%;
+        max-width: 80px;
+        height: auto;
+    }
+    .about-image .project-img {
+        max-width: 130px;
     }
 }
 
