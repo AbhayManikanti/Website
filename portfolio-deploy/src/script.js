@@ -115,23 +115,33 @@ class AnimationController {
         const speed = 200;
 
         const animateCounter = (counter) => {
-            const target = parseInt(counter.textContent.replace(/[^\d]/g, ''));
+            const originalText = counter.textContent;
+        
+            // Use regular expressions to extract the different parts
+            const prefixMatch = originalText.match(/^[£$€]/); // Matches common currency symbols at the start
+            const prefix = prefixMatch ? prefixMatch[0] : ''; // Get the matched currency symbol or an empty string
+        
+            const numericPart = originalText.replace(/^[£$€]|\D/g, ''); // Removes currency symbol and non-digits
+            const target = parseInt(numericPart, 10);
+        
+            const suffixMatch = originalText.match(/[^0-9.]+$/); // Matches any non-digit characters at the end
+            const suffix = suffixMatch ? suffixMatch[0] : ''; // Get the matched suffix or an empty string
+        
+            const speed = 200; // Define your speed here
             const increment = target / speed;
             let current = 0;
-
+        
             const updateCount = () => {
                 if (current < target) {
                     current += increment;
-                    const displayValue = Math.ceil(current);
-                    const originalText = counter.textContent;
-                    const suffix = originalText.replace(/[\d]/g, '');
-                    counter.textContent = displayValue + suffix.replace(/[\d]/g, '');
+                    const displayValue = Math.round(current);
+                    counter.textContent = prefix + displayValue + suffix;
                     requestAnimationFrame(updateCount);
                 } else {
-                    counter.textContent = counter.textContent;
+                    counter.textContent = prefix + target + suffix; // Set the final value correctly
                 }
             };
-
+        
             updateCount();
         };
 
