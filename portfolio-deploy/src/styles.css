@@ -315,6 +315,9 @@ body {
     border-radius: 50%;
     opacity: 1;
     z-index:1;
+    display: flex;           /* Added */
+    align-items: center;     /* Added */
+    justify-content: center; /* Added */
     animation: float 6s ease-in-out infinite;
 }
 
@@ -1216,9 +1219,12 @@ body {
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-    .hero-container {
+    .hero-container,
+    .about-content {
         grid-template-columns: 1fr;
         gap: 40px;
+        padding: 80px 24px 40px;
+        justify-items: center;
         text-align: center;
     }
     
@@ -1226,16 +1232,36 @@ body {
         font-size: 48px;
     }
     
-    .about-content {
-        grid-template-columns: 1fr;
-        gap: 40px;
+    .hero-visual {
+        min-height: 500px;
+        height: auto;
+        max-height: 600px;
     }
+    
+    .hero-shape {
+        width: 450px;
+        height: 450px;
+        min-width: 450px;
+        min-height: 450px;
+        max-width: 450px;
+        max-height: 450px;
+    }
+    
+    .project-img2 {
+        width: 450px;
+        height: 450px;
+        min-width: 450px;
+        min-height: 450px;
+        max-width: 450px;
+        max-height: 450px;
+    }
+    
     
     .contact-content {
         grid-template-columns: 1fr;
         gap: 40px;
     }
-    
+
     .chatbot-container {
         width: 340px;
     }
@@ -1244,11 +1270,51 @@ body {
 @media (max-width: 768px) {
     .nav-menu {
         display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100vw;
+        background: rgba(255,255,255,0.97);
+        box-shadow: var(--shadow-lg);
+        z-index: 999;
+        padding: 32px 0;
+        gap: 24px;
+    }
+    
+    .nav-menu.active {
+        display: flex;
     }
     
     .hamburger {
         display: flex;
+        z-index: 1001;
     }
+    
+    .hero-visual {
+        min-height: 400px;
+        height: auto;
+        max-height: 500px;
+    }
+    
+    .hero-shape {
+        width: 350px;
+        height: 350px;
+        min-width: 350px;
+        min-height: 350px;
+        max-width: 350px;
+        max-height: 350px;
+    }
+    
+    .project-img2 {
+        width: 350px;
+        height: 350px;
+        min-width: 350px;
+        min-height: 350px;
+        max-width: 350px;
+        max-height: 350px;
+    }
+    
     
     .container {
         padding: 0 16px;
@@ -1276,37 +1342,56 @@ body {
         font-size: 32px;
     }
     
-    .projects-grid {
-        grid-template-columns: 1fr;
-    }
-    
+    .projects-grid,
     .skills-grid {
         grid-template-columns: 1fr;
     }
-    
     .education-card {
         flex-direction: column;
         text-align: center;
     }
-    
     .footer-content {
         flex-direction: column;
         gap: 20px;
         text-align: center;
     }
-    
     .chatbot-container {
         width: calc(100vw - 32px);
         height: 400px;
         right: -8px;
     }
-    
     .chat-notification {
         right: 16px;
     }
+   
 }
 
 @media (max-width: 480px) {
+    .hero-visual {
+        min-height: 350px;
+        height: auto;
+        max-height: 400px;
+    }
+    
+    .hero-shape {
+        width: 350px;
+        height: 350px;
+        min-width: 350px;
+        min-height: 350px;
+        max-width: 350px;
+        max-height: 350px;
+    }
+    
+    .project-img2 {
+        width: 350px;
+        height: 350px;
+        min-width: 350px;
+        min-height: 350px;
+        max-width: 350px;
+        max-height: 350px;
+    }
+    
+    
     .hero-title {
         font-size: 28px;
     }
@@ -1343,6 +1428,30 @@ body {
         padding: 24px;
     }
 }
+@media (max-width: 360px) {
+    .hero-visual {
+        min-height: 300px;
+    }
+    
+    .hero-shape {
+        width: 300px;
+        height: 300px;
+        min-width: 300px;
+        min-height: 300px;
+        max-width: 300px;
+        max-height: 300px;
+    }
+    
+    .project-img2 {
+        width: 300px;
+        height: 300px;
+        min-width: 300px;
+        min-height: 300px;
+        max-width: 300px;
+        max-height: 300px;
+    }
+    
+}
 
 /* Utility Classes */
 .text-center {
@@ -1376,7 +1485,7 @@ body {
     width: 100%;
     height: auto;  /* keeps aspect ratio */
     border-radius: 10px;
-    margin-bottom: 1rem;
+    margin-bottom: 0rem;
   }
   .project-img2 {
     width: 400px;
