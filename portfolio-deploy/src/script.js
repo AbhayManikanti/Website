@@ -164,7 +164,7 @@ class AnimationController {
     }
 }
 
-// Chatbot functionality
+// Updated ChatBot class with fixed hyperlink functionality
 class ChatBot {
     constructor() {
         this.isOpen = false;
@@ -270,60 +270,74 @@ class ChatBot {
         this.showTypingIndicator();
 
         try {
-            console.log('Sending message to API:', this.apiUrl);
             const response = await fetch(this.apiUrl, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    question: message
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: message })
             });
 
-            console.log('API Response status:', response.status);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
-            console.log('API Response data:', data);
             this.hideTypingIndicator();
             
             if (data.answer) {
                 this.addMessage(data.answer, 'bot');
             } else {
-                this.addMessage('I apologize, but I encountered an issue processing your question. Please try asking something else about Abhay\'s background or experience.', 'bot');
+                this.addMessage('I apologize, but I encountered an issue processing your question. Please try asking something else.', 'bot');
             }
         } catch (error) {
             console.error('Chatbot API Error:', error);
             this.hideTypingIndicator();
-            
-            const fallbackResponses = {
-                'gpa': 'Abhay has a GPA of 7.9/10 from BMS College of Engineering.',
-                'experience': 'Abhay is currently working as an AI Intern at Fortive, where he has developed automation solutions that saved £35,000 and 500+ hours annually.',
-                'skills': 'Abhay specializes in AI/ML, RPA, Python, Java, JavaScript, UiPath, and data analytics. He also has strong business and project management skills.',
-                'projects': 'Some of Abhay\'s key projects include Park-Ease (smart parking system), Intelligent Resume Screening using UiPath, and COVID-19 Data Analytics for IIT Roorkee.',
-                'education': 'Abhay is pursuing a B.Tech in Information Science & Engineering from BMS College of Engineering, Bangalore, with an expected graduation in July 2026.'
-            };
-
-            const messageLower = message.toLowerCase();
-            let response = 'I\'m having trouble connecting to my knowledge base right now. ';
-
-            for (const [key, value] of Object.entries(fallbackResponses)) {
-                if (messageLower.includes(key)) {
-                    response = value;
-                    break;
-                }
-            }
-
-            if (response.includes('trouble connecting')) {
-                response += 'However, I can tell you that Abhay is an AI & RPA specialist with experience in automation, machine learning, and process optimization. Feel free to ask about his specific skills, projects, or experience!';
-            }
-
-            this.addMessage(response, 'bot');
+            this.addMessage('I\'m having some trouble connecting right now. Please try again in a moment.', 'bot');
         }
+    }
+
+    // Fixed linkification function
+    linkifyText(text) {
+        // Define regex patterns for different types of links
+        const patterns = [
+            {
+                // Email addresses
+                regex: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/gi,
+                replacement: (match) => `<a href="mailto:${match}">${match}</a>`
+            },
+            {
+                // Phone numbers (various formats)
+                regex: /(\+?[\d\s\-\(\)]{10,})/gi,
+                replacement: (match) => {
+                    // Clean phone number for tel: link
+                    const cleanPhone = match.replace(/\D/g, '');
+                    if (cleanPhone.length >= 10) {
+                        return `<a href="tel:${cleanPhone}">${match}</a>`;
+                    }
+                    return match;
+                }
+            },
+            {
+                // Full URLs with protocol
+                regex: /\b(https?:\/\/[^\s<>'")\]]+)/gi,
+                replacement: (match) => `<a href="${match}" target="_blank" rel="noopener noreferrer">${match}</a>`
+            },
+            {
+                // URLs starting with www.
+                regex: /\b(www\.[^\s<>'")\]]+)/gi,
+                replacement: (match) => `<a href="https://${match}" target="_blank" rel="noopener noreferrer">${match}</a>`
+            },
+            {
+                // Domain names with specific social media and common platforms
+                regex: /\b([a-zA-Z0-9-]+\.(?:linkedin\.com\/in\/[^\s<>'")\]]+|github\.com\/[^\s<>'")\]]+|twitter\.com\/[^\s<>'")\]]+|instagram\.com\/[^\s<>'")\]]+|facebook\.com\/[^\s<>'")\]]+|youtube\.com\/[^\s<>'")\]]+|com|org|net|edu|gov|mil|int|co|io|ai|tech|dev|app|blog|info|biz|name|pro))\b/gi,
+                replacement: (match) => `<a href="https://${match}" target="_blank" rel="noopener noreferrer">${match}</a>`
+            }
+        ];
+
+        let linkedText = text;
+        
+        // Apply each pattern
+        patterns.forEach(pattern => {
+            linkedText = linkedText.replace(pattern.regex, pattern.replacement);
+        });
+
+        return linkedText;
     }
 
     addMessage(message, sender) {
@@ -333,11 +347,78 @@ class ChatBot {
         
         const messageContent = document.createElement('div');
         messageContent.className = 'message-content';
-        messageContent.innerHTML = `<p>${message}</p>`;
+
+        if (sender === 'bot') {
+            // Step 1: Convert Markdown to HTML using marked.js (if available)
+            let htmlContent;
+            if (typeof marked !== 'undefined') {
+                htmlContent = marked.parse(message);
+            } else {
+                // Fallback: basic markdown conversion
+                htmlContent = message
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/`(.*?)`/g, '<code>$1</code>')
+                    .replace(/\n/g, '<br>');
+            }
+            
+            // Step 2: Apply linkification to the HTML content
+            // This now handles both markdown links and plain text URLs
+            const linkifiedContent = this.linkifyHtmlContent(htmlContent);
+            
+            // Step 3: Set the innerHTML with the processed content
+            messageContent.innerHTML = linkifiedContent;
+
+        } else {
+            // For user messages, apply linkification to plain text
+            const linkedText = this.linkifyText(message);
+            messageContent.innerHTML = `<p>${linkedText}</p>`;
+        }
         
         messageDiv.appendChild(messageContent);
         messagesContainer.appendChild(messageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // UPDATED: Helper function to linkify HTML content while preserving existing tags
+    linkifyHtmlContent(html) {
+        // Create a temporary DOM element to parse the HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+
+        // Ensure all links (including those from Markdown) open in a new tab
+        tempDiv.querySelectorAll('a').forEach(anchor => {
+            // Check if it's an external link (http/https)
+            if (anchor.protocol === 'http:' || anchor.protocol === 'https:') {
+                anchor.target = '_blank';
+                anchor.rel = 'noopener noreferrer';
+            }
+        });
+
+        // Recursively process text nodes to find and linkify plain text URLs
+        const processTextNodes = (node) => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const linkedText = this.linkifyText(node.textContent);
+                if (linkedText !== node.textContent) {
+                    // Replace the text node with linked content
+                    const wrapper = document.createElement('span');
+                    wrapper.innerHTML = linkedText;
+                    
+                    // Replace text node with the new elements
+                    const parent = node.parentNode;
+                    while (wrapper.firstChild) {
+                        parent.insertBefore(wrapper.firstChild, node);
+                    }
+                    parent.removeChild(node);
+                }
+            } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName.toLowerCase() !== 'a') {
+                // Process child nodes, but skip existing anchor tags to avoid creating nested links
+                Array.from(node.childNodes).forEach(processTextNodes);
+            }
+        };
+
+        processTextNodes(tempDiv);
+        return tempDiv.innerHTML;
     }
 
     showTypingIndicator() {
@@ -345,11 +426,7 @@ class ChatBot {
         const typingDiv = document.createElement('div');
         typingDiv.className = 'typing-indicator';
         typingDiv.id = 'typing-indicator';
-        typingDiv.innerHTML = `
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-        `;
+        typingDiv.innerHTML = `<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>`;
         messagesContainer.appendChild(typingDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
@@ -434,6 +511,8 @@ class InteractiveFeatures {
     constructor() {
         this.init();
     }
+
+
 
     init() {
         this.setupHoverEffects();
