@@ -175,7 +175,6 @@ class ChatBot {
     init() {
         this.setupEventListeners();
         this.showWelcomeMessage();
-        this.testConnection();
     }
 
     setupEventListeners() {
@@ -231,29 +230,6 @@ class ChatBot {
                 }, 300);
             }
         }, 13000);
-    }
-
-    async testConnection() {
-        try {
-            console.log('Testing chatbot API connection...');
-            const response = await fetch(this.apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    question: 'test'
-                })
-            });
-            
-            if (response.ok) {
-                console.log('✅ Chatbot API connection successful');
-            } else {
-                console.warn('⚠️ Chatbot API connection failed with status:', response.status);
-            }
-        } catch (error) {
-            console.warn('⚠️ Chatbot API connection test failed:', error.message);
-        }
     }
 
     toggleChat() {
