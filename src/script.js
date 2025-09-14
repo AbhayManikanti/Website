@@ -1,12 +1,16 @@
 // Theme Toggle functionality
 class ThemeController {
     constructor() {
+        this.toggleCount = 0;
+        this.easterEggActivated = false;
+        this.isAnimating = false; // Add animation state tracking
         this.init();
     }
 
     init() {
         this.setupThemeToggle();
         this.loadSavedTheme();
+        this.createEasterEggElements();
     }
 
     loadSavedTheme() {
@@ -17,12 +21,44 @@ class ThemeController {
     setupThemeToggle() {
         const themeToggle = document.getElementById('theme-toggle');
         
-        themeToggle?.addEventListener('click', () => {
+        themeToggle?.addEventListener('click', (e) => {
+            console.log('Toggle clicked - isAnimating:', this.isAnimating, 'easterEggActivated:', this.easterEggActivated);
+            
+            // Prevent clicking during animation or if easter egg is active
+            if (this.isAnimating) {
+                console.log('Blocked: animation in progress');
+                return; // Block clicks during sweeping animation
+            }
+            
+            if (this.easterEggActivated) {
+                console.log('Easter egg active, showing crimson popup');
+                this.showCrimsonPopup();
+                return;
+            }
+            
+            console.log('Normal theme toggle');
             this.toggleTheme();
         });
     }
 
     toggleTheme() {
+        if (this.easterEggActivated) return; // Prevent toggling after easter egg
+        
+        this.toggleCount++;
+        console.log('Toggle count:', this.toggleCount); // Debug log
+        
+        // Check for easter egg trigger BEFORE setting animation state
+        if (this.toggleCount >= 5) {
+            console.log('Activating easter egg!'); // Debug log
+            this.activateEasterEgg();
+            return;
+        }
+        
+        // Set animation state and disable toggle button (only for normal toggles)
+        this.isAnimating = true;
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle?.classList.add('animating');
+        
         const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
         
@@ -41,9 +77,11 @@ class ThemeController {
             localStorage.setItem('theme', newTheme);
         }, 400);
         
-        // Remove transitioning class after animation completes
+        // Remove transitioning class and re-enable button after animation completes
         setTimeout(() => {
             document.body.classList.remove('theme-transitioning');
+            this.isAnimating = false;
+            themeToggle?.classList.remove('animating');
         }, 1200);
     }
     
@@ -73,6 +111,179 @@ class ThemeController {
                 moonAnimation.classList.remove('active');
                 moonIcon?.classList.remove('animate');
             }, 1000);
+        }
+    }
+    
+    createEasterEggElements() {
+        // Create red moon animation container
+        const redMoonContainer = document.createElement('div');
+        redMoonContainer.id = 'red-moon-animation';
+        redMoonContainer.innerHTML = `
+            <div class="cloud-torrent">
+                <i class="fas fa-cloud cloud-icon cloud-1"></i>
+                <i class="fas fa-cloud cloud-icon cloud-2"></i>
+                <i class="fas fa-cloud cloud-icon cloud-3"></i>
+                <i class="fas fa-cloud cloud-icon cloud-4"></i>
+                <i class="fas fa-cloud cloud-icon cloud-5"></i>
+                <i class="fas fa-cloud cloud-icon cloud-6"></i>
+                <i class="fas fa-cloud cloud-icon cloud-7"></i>
+                <i class="fas fa-cloud cloud-icon cloud-8"></i>
+                <i class="fas fa-cloud cloud-icon cloud-9"></i>
+                <i class="fas fa-cloud cloud-icon cloud-10"></i>
+                <i class="fas fa-cloud cloud-icon cloud-11"></i>
+                <i class="fas fa-cloud cloud-icon cloud-12"></i>
+                <i class="fas fa-cloud cloud-icon cloud-13"></i>
+                <i class="fas fa-cloud cloud-icon cloud-14"></i>
+                <i class="fas fa-cloud cloud-icon cloud-15"></i>
+                <i class="fas fa-cloud cloud-icon cloud-16"></i>
+                <i class="fas fa-cloud cloud-icon cloud-17"></i>
+                <i class="fas fa-cloud cloud-icon cloud-18"></i>
+                <i class="fas fa-cloud cloud-icon cloud-19"></i>
+                <i class="fas fa-cloud cloud-icon cloud-20"></i>
+                <i class="fas fa-cloud cloud-icon cloud-21"></i>
+                <i class="fas fa-cloud cloud-icon cloud-22"></i>
+                <i class="fas fa-cloud cloud-icon cloud-23"></i>
+                <i class="fas fa-cloud cloud-icon cloud-24"></i>
+                <i class="fas fa-cloud cloud-icon cloud-25"></i>
+                <i class="fas fa-cloud cloud-icon cloud-26"></i>
+                <i class="fas fa-cloud cloud-icon cloud-27"></i>
+                <i class="fas fa-cloud cloud-icon cloud-28"></i>
+                <i class="fas fa-cloud cloud-icon cloud-29"></i>
+                <i class="fas fa-cloud cloud-icon cloud-30"></i>
+                <i class="fas fa-cloud cloud-icon cloud-31"></i>
+                <i class="fas fa-cloud cloud-icon cloud-32"></i>
+                <i class="fas fa-cloud cloud-icon cloud-33"></i>
+                <i class="fas fa-cloud cloud-icon cloud-34"></i>
+                <i class="fas fa-cloud cloud-icon cloud-35"></i>
+            </div>
+            <div class="red-moon-convergence">
+                <div class="converging-sun"><i class="fas fa-sun"></i></div>
+                <div class="converging-moon"><i class="fas fa-moon"></i></div>
+                <div class="red-moon"><i class="fas fa-circle"></i></div>
+            </div>
+            <div class="easter-egg-text">
+                <h2 class="easter-title">Easter Egg Unlocked</h2>
+                <p class="easter-subtitle">The Dark Side of the Moon</p>
+            </div>
+        `;
+        document.body.appendChild(redMoonContainer);
+        
+        // Create crimson moon popup message
+        const popupMessage = document.createElement('div');
+        popupMessage.id = 'crimson-popup';
+        popupMessage.innerHTML = `
+            <div class="crimson-message">
+                <div class="crimson-icon"></div>
+                <p>The crimson moon's radiance cannot be escaped</p>
+            </div>
+        `;
+        document.body.appendChild(popupMessage);
+    }
+    
+    activateEasterEgg() {
+        this.easterEggActivated = true;
+        
+        // Clean up any animation states and make button ready for crimson popup
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            // Remove any lingering animation classes
+            themeToggle.classList.remove('animating');
+            // Add disabled class for visual feedback
+            themeToggle.classList.add('disabled');
+            // Ensure it's clickable for crimson popup
+            themeToggle.style.pointerEvents = 'auto';
+            themeToggle.style.cursor = 'pointer';
+        }
+        // Reset animation state
+        this.isAnimating = false;
+        
+        // Show red moon animation
+        const redMoonAnimation = document.getElementById('red-moon-animation');
+        redMoonAnimation?.classList.add('active');
+        
+        // Start convergence animation sequence
+        setTimeout(() => {
+            redMoonAnimation?.querySelector('.red-moon-convergence')?.classList.add('converging');
+            // Trigger cloud torrent during convergence
+            redMoonAnimation?.querySelector('.cloud-torrent')?.classList.add('active');
+        }, 500);
+        
+        // Show easter egg text
+        setTimeout(() => {
+            redMoonAnimation?.querySelector('.easter-egg-text')?.classList.add('show');
+        }, 4000);
+        
+        // Apply red horror theme
+        setTimeout(() => {
+            document.documentElement.setAttribute('data-theme', 'horror');
+            document.body.classList.add('horror-mode');
+        }, 5000);
+        
+        // Hide red moon animation but keep theme
+        setTimeout(() => {
+            redMoonAnimation?.classList.remove('active');
+            // Ensure toggle button is clickable for crimson popup
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.style.pointerEvents = 'auto';
+                console.log('Toggle button made clickable for crimson popup');
+            }
+        }, 6000);
+    }
+    
+    showCrimsonPopup() {
+        try {
+            console.log('showCrimsonPopup called');
+            const popup = document.getElementById('crimson-popup');
+            console.log('Popup element found:', popup);
+            
+            if (!popup) {
+                console.warn('Crimson popup element not found, recreating...');
+                this.createCrimsonPopup();
+                return;
+            }
+            
+            console.log('Adding show class to popup');
+            // Show popup
+            popup.classList.add('show');
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                if (popup && popup.parentNode) {
+                    console.log('Hiding crimson popup');
+                    popup.classList.remove('show');
+                }
+            }, 3000);
+        } catch (error) {
+            console.error('Error showing crimson popup:', error);
+        }
+    }
+    
+    createCrimsonPopup() {
+        try {
+            // Remove existing popup if any
+            const existingPopup = document.getElementById('crimson-popup');
+            if (existingPopup) {
+                existingPopup.remove();
+            }
+            
+            // Create crimson moon popup message
+            const popupMessage = document.createElement('div');
+            popupMessage.id = 'crimson-popup';
+            popupMessage.innerHTML = `
+                <div class="crimson-message">
+                    <div class="crimson-icon"></div>
+                    <p>The crimson moon's radiance cannot be escaped</p>
+                </div>
+            `;
+            document.body.appendChild(popupMessage);
+            
+            // Show it immediately after creation
+            setTimeout(() => {
+                this.showCrimsonPopup();
+            }, 50);
+        } catch (error) {
+            console.error('Error creating crimson popup:', error);
         }
     }
 }
@@ -189,7 +400,7 @@ class AnimationController {
 
     setupCounterAnimations() {
         const counters = document.querySelectorAll('.stat-number');
-        const speed = 200;
+        const speed = 100; // Doubled speed - was 200, now 100
 
         const animateCounter = (counter) => {
             const originalText = counter.textContent;
@@ -204,7 +415,7 @@ class AnimationController {
             const suffixMatch = originalText.match(/[^0-9.]+$/); // Matches any non-digit characters at the end
             const suffix = suffixMatch ? suffixMatch[0] : ''; // Get the matched suffix or an empty string
         
-            const speed = 200; // Define your speed here
+            const speed = 100; // Doubled speed - was 200, now 100
             const increment = target / speed;
             let current = 0;
         
@@ -245,6 +456,13 @@ class AnimationController {
 class ChatBot {
     constructor() {
         this.isOpen = false;
+        // Check if user has ever sent a message (not just opened chatbot)
+        this.hasUsedChatbot = false;
+        try {
+            this.hasUsedChatbot = localStorage.getItem('chatbot-used') === 'true';
+        } catch (e) {
+            console.warn('LocalStorage not available, treating as first time');
+        }
         this.apiUrl = 'https://fastapi-backend-925151288978.asia-southeast1.run.app/ask';
         this.init();
     }
@@ -322,6 +540,11 @@ class ChatBot {
         if (this.isOpen) {
             container.classList.add('open');
             document.getElementById('chatbot-message-input')?.focus();
+            
+            // Show backend connection popup if user has never sent a message
+            if (!this.hasUsedChatbot) {
+                this.showBackendConnectionPopup();
+            }
         } else {
             container.classList.remove('open');
         }
@@ -330,6 +553,51 @@ class ChatBot {
     closeChat() {
         this.isOpen = false;
         document.getElementById('chatbot-container').classList.remove('open');
+    }
+
+    showBackendConnectionPopup() {
+        try {
+            // Remove any existing backend popup first
+            const existingPopup = document.getElementById('backend-connection-popup');
+            if (existingPopup) {
+                existingPopup.remove();
+            }
+            
+            // Create the popup message
+            const popup = document.createElement('div');
+            popup.id = 'backend-connection-popup';
+            popup.className = 'backend-popup';
+            popup.innerHTML = `
+                <div class="backend-popup-content">
+                    <i class="fas fa-server"></i>
+                    <p>Please wait 10-15 seconds for the first message while we connect to our backend servers</p>
+                </div>
+            `;
+            
+            // Add to body
+            document.body.appendChild(popup);
+            
+            // Show popup with animation
+            setTimeout(() => {
+                if (popup && popup.parentNode) {
+                    popup.classList.add('show');
+                }
+            }, 100);
+            
+            // Hide popup after 5 seconds
+            setTimeout(() => {
+                if (popup && popup.parentNode) {
+                    popup.classList.remove('show');
+                    setTimeout(() => {
+                        if (popup && popup.parentNode) {
+                            popup.remove();
+                        }
+                    }, 300);
+                }
+            }, 5000);
+        } catch (error) {
+            console.error('Error showing backend connection popup:', error);
+        }
     }
 
     async handleSendMessage() {
@@ -343,6 +611,16 @@ class ChatBot {
     }
 
     async sendMessage(message) {
+        // Mark chatbot as used when user sends their first message
+        if (!this.hasUsedChatbot) {
+            this.hasUsedChatbot = true;
+            try {
+                localStorage.setItem('chatbot-used', 'true');
+            } catch (e) {
+                console.warn('Could not save chatbot usage to localStorage');
+            }
+        }
+        
         this.addMessage(message, 'user');
         this.showTypingIndicator();
 
@@ -611,9 +889,15 @@ class InteractiveFeatures {
     }
 
     setupClickAnimations() {
-        // Add click animation to buttons
+        // Add click animation to buttons (disabled in horror mode)
         document.querySelectorAll('.btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
+                // Skip ripple effect in horror mode
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                if (currentTheme === 'horror') {
+                    return;
+                }
+                
                 const ripple = document.createElement('span');
                 const rect = this.getBoundingClientRect();
                 const size = Math.max(rect.width, rect.height);

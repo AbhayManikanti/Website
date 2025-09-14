@@ -96,6 +96,52 @@
     --footer-text: #6b7280;
 }
 
+/* Horror mode - The Dark Side of the Moon */
+[data-theme="horror"] {
+    --primary-color: #dc2626;
+    --primary-hover: #b91c1c;
+    --secondary-color: #991b1b;
+    --accent-color: #fca5a5;
+    
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #1a0f0f;
+    --bg-tertiary: #2d1414;
+    --text-primary: #fef2f2;
+    --text-secondary: #fecaca;
+    --text-tertiary: #dc2626;
+    --border-color: #7f1d1d;
+    --card-bg: #1a0f0f;
+    --nav-bg: rgba(26, 15, 15, 0.95);
+    
+    /* Neutral colors with red tints */
+    --neutral-50: #2d1414;
+    --neutral-100: #450a0a;
+    --neutral-200: #7f1d1d;
+    --neutral-600: #fecaca;
+    --neutral-900: #fef2f2;
+    
+    /* Contact section - horror theme */
+    --contact-bg: #0a0a0a;
+    --contact-card-bg: #1f0f0f;
+    --contact-border: #991b1b;
+    --contact-text: #fef2f2;
+    --contact-text-secondary: #fca5a5;
+    
+    /* Footer - horror theme */
+    --footer-bg: #050505;
+    --footer-border: #7f1d1d;
+    --footer-text: #dc2626;
+    
+    /* Shadows with red glow */
+    --shadow-sm: 0 1px 2px 0 rgba(220, 38, 38, 0.2);
+    --shadow-md: 0 4px 6px -1px rgba(220, 38, 38, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(220, 38, 38, 0.4);
+    --shadow-xl: 0 20px 25px -5px rgba(220, 38, 38, 0.5);
+    
+    /* Gradient with red theme */
+    --gradient-primary: linear-gradient(135deg, #dc2626 0%, #991b1b 50%, #7f1d1d 100%);
+}
+
 html {
     scroll-behavior: smooth;
 }
@@ -1854,5 +1900,807 @@ body.theme-transitioning::before {
 @media (max-width: 480px) {
     .big-sun, .big-moon {
         font-size: 60px;
+    }
+}
+
+/* Easter Egg - Red Moon Animation */
+#red-moon-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    backdrop-filter: blur(20px);
+}
+
+#red-moon-animation.active {
+    display: flex;
+}
+
+.red-moon-convergence {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 50px;
+}
+
+.converging-sun,
+.converging-moon {
+    position: absolute;
+    font-size: 100px;
+    transition: all 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    color: #fbbf24;
+}
+
+.converging-sun {
+    left: calc(50% - 200px);
+    top: 50%;
+    transform: translate(-50%, -50%);
+    filter: brightness(1.2) drop-shadow(0 0 20px #fbbf24) drop-shadow(0 0 40px #fbbf24);
+}
+
+.converging-moon {
+    left: calc(50% + 200px);
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #e5e7eb;
+    filter: brightness(1.2) drop-shadow(0 0 20px #e5e7eb) drop-shadow(0 0 40px #e5e7eb);
+}
+
+.red-moon {
+    position: absolute;
+    font-size: 0; /* Hide font icon, use pure CSS */
+    opacity: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: all 1.5s ease-out 2s; /* Delay to appear after convergence */
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    background: 
+        /* Red tint overlay to give blood moon effect */
+        radial-gradient(circle at center, rgba(220, 53, 69, 0.6) 0%, rgba(200, 35, 51, 0.4) 50%, rgba(154, 30, 40, 0.3) 100%),
+        /* Your authentic lunar surface texture */
+        url('../bloodmoon.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    overflow: hidden;
+    
+    filter: brightness(2.0) 
+            drop-shadow(0 0 40px #cc2222) 
+            drop-shadow(0 0 80px #bb1111) 
+            drop-shadow(0 0 120px #aa1010);
+    
+    box-shadow: 
+        inset 0 0 20px rgba(200, 50, 50, 0.3),
+        0 0 50px rgba(180, 30, 30, 0.6);
+}
+
+
+
+.red-moon-convergence.converging .converging-sun {
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 2s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s ease-out 1.5s;
+    opacity: 0;
+}
+
+.red-moon-convergence.converging .converging-moon {
+    right: auto;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 2s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s ease-out 1.5s;
+    opacity: 0;
+}
+
+.red-moon-convergence.converging .red-moon {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    animation: crimsonMoonPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes crimsonMoonPulse {
+    0% {
+        filter: brightness(2.0) 
+                drop-shadow(0 0 40px #cc2222) 
+                drop-shadow(0 0 80px #bb1111) 
+                drop-shadow(0 0 120px #aa1010);
+        box-shadow: 
+            inset 0 0 20px rgba(200, 50, 50, 0.3),
+            0 0 50px rgba(180, 30, 30, 0.6);
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        filter: brightness(2.6) 
+                drop-shadow(0 0 60px #cc2222) 
+                drop-shadow(0 0 120px #bb1111) 
+                drop-shadow(0 0 180px #aa1010) 
+                drop-shadow(0 0 240px #990000);
+        box-shadow: 
+            inset 0 0 30px rgba(200, 50, 50, 0.5),
+            0 0 80px rgba(180, 30, 30, 0.8),
+            0 0 120px rgba(160, 20, 20, 0.4);
+        transform: translate(-50%, -50%) scale(1.15);
+    }
+}
+
+.easter-egg-text {
+    text-align: center;
+    color: #fff;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 1s ease-out;
+}
+
+.easter-egg-text.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.easter-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: linear-gradient(45deg, #fff, #dc2626, #fff);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+.easter-subtitle {
+    font-size: 1.2rem;
+    color: #dc2626;
+    font-weight: 500;
+    text-shadow: 0 0 10px #dc2626;
+    animation: redGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+@keyframes redGlow {
+    0% { text-shadow: 0 0 10px #dc2626; }
+    100% { text-shadow: 0 0 20px #dc2626, 0 0 30px #dc2626; }
+}
+
+/* Cloud Torrent Effect */
+.cloud-torrent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 8;
+}
+
+.cloud-icon {
+    position: absolute;
+    color: #1a1a1a;
+    font-size: 15rem;
+    opacity: 0;
+    text-shadow: 0 0 60px rgba(220, 38, 38, 1);
+    transform-origin: center;
+    transform: scaleX(16) scaleY(4);
+}
+
+.cloud-torrent.active .cloud-icon {
+    animation-duration: 2.2s;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+/* Mobile cloud timing and positioning adjustment */
+@media (max-width: 768px) {
+    .cloud-torrent.active .cloud-icon {
+        animation-duration: 2.2s;
+    }
+    
+    /* Position clouds just off-screen on mobile for smooth entrance */
+    .cloud-1, .cloud-3, .cloud-5, .cloud-7, .cloud-9, .cloud-11, .cloud-13, .cloud-15, .cloud-17, .cloud-19, .cloud-21, .cloud-23, .cloud-25, .cloud-27, .cloud-29, .cloud-31, .cloud-33, .cloud-35 { 
+        left: -800px !important; 
+    }
+    .cloud-2, .cloud-4, .cloud-6, .cloud-8, .cloud-10, .cloud-12, .cloud-14, .cloud-16, .cloud-18, .cloud-20, .cloud-22, .cloud-24, .cloud-26, .cloud-28, .cloud-30, .cloud-32, .cloud-34 { 
+        right: -800px !important; 
+    }
+    
+    /* Adjust mobile keyframes for smoother entrance */
+    @keyframes sweepRight {
+        0% { 
+            opacity: 1; 
+            transform: translateX(0);
+        }
+        88% { 
+            opacity: 1; 
+            transform: translateX(calc(100vw + 600px));
+        }
+        100% { 
+            opacity: 0; 
+            transform: translateX(calc(100vw + 800px));
+        }
+    }
+
+    @keyframes sweepLeft {
+        0% { 
+            opacity: 1; 
+            transform: translateX(0);
+        }
+        88% { 
+            opacity: 1; 
+            transform: translateX(calc(-100vw - 600px));
+        }
+        100% { 
+            opacity: 0; 
+            transform: translateX(calc(-100vw - 800px));
+        }
+    }
+}
+
+/* Individual cloud positioning - Complete screen coverage */
+.cloud-1 { top: -2%; left: -1600px; animation-name: sweepRight; animation-delay: 0s; }
+.cloud-2 { top: 2%; right: -1600px; animation-name: sweepLeft; animation-delay: 0s; }
+.cloud-3 { top: 6%; left: -1600px; animation-name: sweepRight; animation-delay: 0.01s; }
+.cloud-4 { top: 10%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.01s; }
+.cloud-5 { top: 14%; left: -1600px; animation-name: sweepRight; animation-delay: 0.02s; }
+.cloud-6 { top: 18%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.02s; }
+.cloud-7 { top: 22%; left: -1600px; animation-name: sweepRight; animation-delay: 0.03s; }
+.cloud-8 { top: 26%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.03s; }
+.cloud-9 { top: 30%; left: -1600px; animation-name: sweepRight; animation-delay: 0.04s; }
+.cloud-10 { top: 34%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.04s; }
+.cloud-11 { top: 38%; left: -1600px; animation-name: sweepRight; animation-delay: 0.05s; }
+.cloud-12 { top: 42%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.05s; }
+.cloud-13 { top: 46%; left: -1600px; animation-name: sweepRight; animation-delay: 0.06s; }
+.cloud-14 { top: 50%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.06s; }
+.cloud-15 { top: 54%; left: -1600px; animation-name: sweepRight; animation-delay: 0.07s; }
+.cloud-16 { top: 58%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.07s; }
+.cloud-17 { top: 62%; left: -1600px; animation-name: sweepRight; animation-delay: 0.08s; }
+.cloud-18 { top: 66%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.08s; }
+.cloud-19 { top: 70%; left: -1600px; animation-name: sweepRight; animation-delay: 0.09s; }
+.cloud-20 { top: 74%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.09s; }
+.cloud-21 { top: 78%; left: -1600px; animation-name: sweepRight; animation-delay: 0.1s; }
+.cloud-22 { top: 82%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.1s; }
+.cloud-23 { top: 86%; left: -1600px; animation-name: sweepRight; animation-delay: 0.11s; }
+.cloud-24 { top: 90%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.11s; }
+.cloud-25 { top: 94%; left: -1600px; animation-name: sweepRight; animation-delay: 0.12s; }
+.cloud-26 { top: 98%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.12s; }
+.cloud-27 { top: 1%; left: -1600px; animation-name: sweepRight; animation-delay: 0.13s; }
+.cloud-28 { top: 5%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.13s; }
+.cloud-29 { top: 9%; left: -1600px; animation-name: sweepRight; animation-delay: 0.14s; }
+.cloud-30 { top: 13%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.14s; }
+.cloud-31 { top: 17%; left: -1600px; animation-name: sweepRight; animation-delay: 0.15s; }
+.cloud-32 { top: 21%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.15s; }
+.cloud-33 { top: 25%; left: -1600px; animation-name: sweepRight; animation-delay: 0.16s; }
+.cloud-34 { top: 29%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.16s; }
+.cloud-35 { top: 33%; left: -1600px; animation-name: sweepRight; animation-delay: 0.17s; }
+
+@keyframes sweepRight {
+    0% { 
+        opacity: 0; 
+        transform: translateX(0);
+    }
+    12% { 
+        opacity: 1; 
+        transform: translateX(300px);
+    }
+    88% { 
+        opacity: 1; 
+        transform: translateX(calc(100vw + 800px));
+    }
+    100% { 
+        opacity: 0; 
+        transform: translateX(calc(100vw + 1200px));
+    }
+}
+
+@keyframes sweepLeft {
+    0% { 
+        opacity: 0; 
+        transform: translateX(0);
+    }
+    12% { 
+        opacity: 1; 
+        transform: translateX(-300px);
+    }
+    88% { 
+        opacity: 1; 
+        transform: translateX(calc(-100vw - 800px));
+    }
+    100% { 
+        opacity: 0; 
+        transform: translateX(calc(-100vw - 1200px));
+    }
+}
+
+/* Horror Mode Effects */
+.horror-mode {
+    animation: horrorGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes horrorGlow {
+    0% {
+        box-shadow: inset 0 0 100px rgba(220, 38, 38, 0.1);
+    }
+    100% {
+        box-shadow: inset 0 0 150px rgba(220, 38, 38, 0.2);
+    }
+}
+
+[data-theme="horror"] .hero-shape {
+    background: var(--gradient-primary);
+    box-shadow: 0 0 50px rgba(220, 38, 38, 0.5), inset 0 0 30px rgba(220, 38, 38, 0.3);
+    animation: float 6s ease-in-out infinite, horrorPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes horrorPulse {
+    0% {
+        box-shadow: 0 0 50px rgba(220, 38, 38, 0.5), inset 0 0 30px rgba(220, 38, 38, 0.3);
+    }
+    100% {
+        box-shadow: 0 0 80px rgba(220, 38, 38, 0.8), inset 0 0 50px rgba(220, 38, 38, 0.5);
+    }
+}
+
+[data-theme="horror"] .floating-card {
+    background: rgba(26, 15, 15, 0.9);
+    border: 1px solid #7f1d1d;
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+    color: #fecaca;
+    backdrop-filter: blur(10px);
+}
+
+[data-theme="horror"] .floating-card i {
+    color: #dc2626;
+    text-shadow: 0 0 10px #dc2626;
+}
+
+[data-theme="horror"] .project-card,
+[data-theme="horror"] .experience-card,
+[data-theme="horror"] .skill-card,
+[data-theme="horror"] .education-card {
+    border: 1px solid #7f1d1d;
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.2);
+}
+
+[data-theme="horror"] .project-card:hover,
+[data-theme="horror"] .experience-card:hover,
+[data-theme="horror"] .skill-card:hover,
+[data-theme="horror"] .education-card:hover {
+    box-shadow: 0 0 30px rgba(220, 38, 38, 0.4);
+    transform: translateY(-8px);
+}
+
+/* Horror Theme - Contact Icons */
+[data-theme="horror"] .contact-item i,
+[data-theme="horror"] .contact-items .contact-item i,
+[data-theme="horror"] .fab,
+[data-theme="horror"] .fas {
+    color: #ffffff !important; /* Force white color for all icons in horror mode */
+}
+
+[data-theme="horror"] .contact-item:hover i,
+[data-theme="horror"] .contact-items .contact-item:hover i {
+    color: #ffffff !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+/* Horror Theme - Chatbot Button */
+[data-theme="horror"] .chatbot-toggle {
+    background: #dc2626 !important; /* Force red color in horror mode */
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.6), var(--shadow-lg);
+}
+
+[data-theme="horror"] .chatbot-toggle:hover {
+    background: #b91c1c !important; /* Darker red on hover in horror mode */
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(220, 38, 38, 0.8), var(--shadow-lg);
+}
+
+/* Horror Theme - Ensure toggle button is clickable for crimson popup */
+[data-theme="horror"] .theme-toggle.disabled {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}
+
+[data-theme="horror"] .theme-toggle.disabled:hover {
+    cursor: pointer !important;
+    opacity: 0.5;
+    transform: scale(0.98);
+}
+
+/* Horror Theme - Buttons */
+[data-theme="horror"] .btn-primary {
+    background: #dc2626 !important; /* Force red background */
+    border-color: #dc2626 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+}
+
+[data-theme="horror"] .btn-primary:hover {
+    background: #b91c1c !important; /* Darker red on hover */
+    border-color: #b91c1c !important;
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.5), var(--shadow-lg);
+}
+
+/* Horror Theme - Accent Buttons (Download Button) */
+[data-theme="horror"] .btn-accent {
+    background: #dc2626 !important; /* Force red background instead of whitish */
+    border-color: #dc2626 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+}
+
+[data-theme="horror"] .btn-accent:hover {
+    background: #b91c1c !important; /* Darker red on hover */
+    border-color: #b91c1c !important;
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.5), var(--shadow-lg);
+}
+
+/* Disable ripple expansion in horror mode */
+[data-theme="horror"] .btn {
+    overflow: hidden;
+    position: relative;
+}
+
+/* Ripple effect styles */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(0);
+    animation: ripple-animation 0.6s linear;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Disabled Toggle Button */
+.theme-toggle.disabled {
+    opacity: 0.3;
+    cursor: pointer; /* Keep clickable for crimson popup */
+    transform: scale(0.9);
+    filter: grayscale(100%);
+    /* Ensure it's clickable */
+    pointer-events: auto !important;
+}
+
+.theme-toggle.disabled:hover {
+    transform: scale(0.95); /* Slight hover feedback */
+    opacity: 0.4;
+    box-shadow: var(--shadow-lg);
+}
+
+/* Animating Toggle Button - during sweeping animation */
+.theme-toggle.animating {
+    opacity: 0.6;
+    cursor: wait;
+    transform: scale(0.95);
+    pointer-events: none; /* Completely prevent clicks */
+    filter: brightness(0.8);
+    transition: all 0.3s ease;
+}
+
+.theme-toggle.animating:hover {
+    transform: scale(0.95); /* Override hover effects during animation */
+}
+
+/* Easter Egg Mobile Responsiveness */
+@media (max-width: 768px) {
+    .red-moon-convergence {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .converging-sun,
+    .converging-moon {
+        font-size: 70px;
+    }
+    
+    .converging-sun {
+        left: calc(50% - 125px);
+    }
+
+    .converging-moon {
+        left: calc(50% + 125px);
+    }
+    
+    .easter-title {
+        font-size: 2rem;
+    }
+    
+    .easter-subtitle {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .red-moon-convergence {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .converging-sun,
+    .converging-moon {
+        font-size: 60px;
+    }
+    
+    .converging-sun {
+        left: calc(50% - 100px);
+    }
+
+    .converging-moon {
+        left: calc(50% + 100px);
+    }
+    
+    .easter-title {
+        font-size: 1.8rem;
+    }
+    
+    .easter-subtitle {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 360px) {
+    /* Switch to vertical convergence for very small screens */
+    .converging-sun {
+        left: 50%;
+        top: calc(50% - 120px);
+        transform: translate(-50%, -50%);
+    }
+
+    .converging-moon {
+        left: 50%;
+        top: calc(50% + 120px);
+        transform: translate(-50%, -50%);
+    }
+    
+    .red-moon-convergence.converging .converging-sun {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+
+    .red-moon-convergence.converging .converging-moon {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+    
+    .converging-sun,
+    .converging-moon {
+        font-size: 60px;
+    }
+    
+    .red-moon {
+        font-size: 70px;
+        width: 70px;
+        height: 70px;
+    }
+    
+    .easter-title {
+        font-size: 1.5rem;
+    }
+    
+    .easter-subtitle {
+        font-size: 0.8rem;
+    }
+}
+
+/* Crimson Moon Popup Message */
+#crimson-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10001;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#crimson-popup.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+}
+
+.crimson-message {
+    background: linear-gradient(135deg, 
+        rgba(80, 0, 0, 0.98) 0%, 
+        rgba(50, 0, 0, 0.96) 50%, 
+        rgba(30, 0, 0, 0.98) 100%);
+    border: 2px solid #8b0000;
+    border-radius: 15px;
+    padding: 20px 30px;
+    text-align: center;
+    color: #fef2f2;
+    font-weight: 600;
+    font-size: 1.1rem;
+    box-shadow: 0 0 40px rgba(139, 0, 0, 0.9),
+                0 0 80px rgba(139, 0, 0, 0.5),
+                inset 0 0 30px rgba(139, 0, 0, 0.4);
+    backdrop-filter: blur(15px);
+    animation: crimsonGlow 2s ease-in-out infinite alternate;
+    max-width: 350px;
+    word-wrap: break-word;
+}
+
+.crimson-icon {
+    display: block;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 15px auto;
+    background-image: url('../bloodmoon.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(139, 0, 0, 1),
+                0 0 25px rgba(220, 38, 38, 0.9),
+                0 0 35px rgba(239, 68, 68, 0.7),
+                0 0 45px rgba(248, 113, 113, 0.5);
+    animation: moonPulse 2s ease-in-out infinite;
+}
+
+.crimson-message p {
+    margin: 0;
+    text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+    line-height: 1.4;
+}
+
+@keyframes crimsonGlow {
+    0% {
+        box-shadow: 0 0 30px rgba(139, 0, 0, 0.8),
+                    0 0 60px rgba(139, 0, 0, 0.4),
+                    inset 0 0 20px rgba(139, 0, 0, 0.3);
+    }
+    100% {
+        box-shadow: 0 0 50px rgba(139, 0, 0, 1),
+                    0 0 100px rgba(139, 0, 0, 0.6),
+                    inset 0 0 30px rgba(139, 0, 0, 0.5);
+    }
+}
+
+@keyframes moonPulse {
+    0% { 
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(139, 0, 0, 1),
+                    0 0 25px rgba(220, 38, 38, 0.9),
+                    0 0 35px rgba(239, 68, 68, 0.7),
+                    0 0 45px rgba(248, 113, 113, 0.5);
+    }
+    50% { 
+        transform: scale(1.1);
+        box-shadow: 0 0 25px rgba(139, 0, 0, 1),
+                    0 0 40px rgba(220, 38, 38, 1),
+                    0 0 55px rgba(239, 68, 68, 0.8),
+                    0 0 70px rgba(248, 113, 113, 0.6);
+    }
+    100% { 
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(139, 0, 0, 1),
+                    0 0 25px rgba(220, 38, 38, 0.9),
+                    0 0 35px rgba(239, 68, 68, 0.7),
+                    0 0 45px rgba(248, 113, 113, 0.5);
+    }
+}
+
+/* Mobile responsiveness for popup */
+@media (max-width: 480px) {
+    .crimson-message {
+        padding: 15px 20px;
+        font-size: 1rem;
+        max-width: 280px;
+        margin: 0 20px;
+    }
+    
+    .crimson-icon {
+        font-size: 1.5rem;
+    }
+}
+
+/* Backend Connection Popup */
+.backend-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    z-index: 10002;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    pointer-events: none;
+}
+
+.backend-popup.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: auto;
+}
+
+.backend-popup-content {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 15px;
+    box-shadow: 
+        0 20px 40px rgba(59, 130, 246, 0.3),
+        0 10px 20px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    text-align: center;
+    max-width: 400px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+/* Horror Theme - Red Backend Popup */
+[data-theme="horror"] .backend-popup-content {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+    box-shadow: 
+        0 20px 40px rgba(220, 38, 38, 0.4),
+        0 10px 20px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(220, 38, 38, 0.3) !important;
+}
+
+[data-theme="horror"] .backend-popup-content i {
+    color: #fca5a5 !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.backend-popup-content i {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    display: block;
+    color: #93c5fd;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.backend-popup-content p {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Mobile responsiveness for backend popup */
+@media (max-width: 480px) {
+    .backend-popup-content {
+        padding: 15px 20px;
+        font-size: 1rem;
+        max-width: 300px;
+        margin: 0 20px;
+    }
+    
+    .backend-popup-content i {
+        font-size: 1.5rem;
+    }
+    
+    .backend-popup-content p {
+        font-size: 1rem;
     }
 }
