@@ -119,43 +119,6 @@ class ThemeController {
         const redMoonContainer = document.createElement('div');
         redMoonContainer.id = 'red-moon-animation';
         redMoonContainer.innerHTML = `
-            <div class="cloud-torrent">
-                <i class="fas fa-cloud cloud-icon cloud-1"></i>
-                <i class="fas fa-cloud cloud-icon cloud-2"></i>
-                <i class="fas fa-cloud cloud-icon cloud-3"></i>
-                <i class="fas fa-cloud cloud-icon cloud-4"></i>
-                <i class="fas fa-cloud cloud-icon cloud-5"></i>
-                <i class="fas fa-cloud cloud-icon cloud-6"></i>
-                <i class="fas fa-cloud cloud-icon cloud-7"></i>
-                <i class="fas fa-cloud cloud-icon cloud-8"></i>
-                <i class="fas fa-cloud cloud-icon cloud-9"></i>
-                <i class="fas fa-cloud cloud-icon cloud-10"></i>
-                <i class="fas fa-cloud cloud-icon cloud-11"></i>
-                <i class="fas fa-cloud cloud-icon cloud-12"></i>
-                <i class="fas fa-cloud cloud-icon cloud-13"></i>
-                <i class="fas fa-cloud cloud-icon cloud-14"></i>
-                <i class="fas fa-cloud cloud-icon cloud-15"></i>
-                <i class="fas fa-cloud cloud-icon cloud-16"></i>
-                <i class="fas fa-cloud cloud-icon cloud-17"></i>
-                <i class="fas fa-cloud cloud-icon cloud-18"></i>
-                <i class="fas fa-cloud cloud-icon cloud-19"></i>
-                <i class="fas fa-cloud cloud-icon cloud-20"></i>
-                <i class="fas fa-cloud cloud-icon cloud-21"></i>
-                <i class="fas fa-cloud cloud-icon cloud-22"></i>
-                <i class="fas fa-cloud cloud-icon cloud-23"></i>
-                <i class="fas fa-cloud cloud-icon cloud-24"></i>
-                <i class="fas fa-cloud cloud-icon cloud-25"></i>
-                <i class="fas fa-cloud cloud-icon cloud-26"></i>
-                <i class="fas fa-cloud cloud-icon cloud-27"></i>
-                <i class="fas fa-cloud cloud-icon cloud-28"></i>
-                <i class="fas fa-cloud cloud-icon cloud-29"></i>
-                <i class="fas fa-cloud cloud-icon cloud-30"></i>
-                <i class="fas fa-cloud cloud-icon cloud-31"></i>
-                <i class="fas fa-cloud cloud-icon cloud-32"></i>
-                <i class="fas fa-cloud cloud-icon cloud-33"></i>
-                <i class="fas fa-cloud cloud-icon cloud-34"></i>
-                <i class="fas fa-cloud cloud-icon cloud-35"></i>
-            </div>
             <div class="red-moon-convergence">
                 <div class="converging-sun"><i class="fas fa-sun"></i></div>
                 <div class="converging-moon"><i class="fas fa-moon"></i></div>
@@ -204,8 +167,6 @@ class ThemeController {
         // Start convergence animation sequence
         setTimeout(() => {
             redMoonAnimation?.querySelector('.red-moon-convergence')?.classList.add('converging');
-            // Trigger cloud torrent during convergence
-            redMoonAnimation?.querySelector('.cloud-torrent')?.classList.add('active');
         }, 500);
         
         // Show easter egg text
@@ -400,7 +361,7 @@ class AnimationController {
 
     setupCounterAnimations() {
         const counters = document.querySelectorAll('.stat-number');
-        const speed = 100; // Doubled speed - was 200, now 100
+        const speed = 200;
 
         const animateCounter = (counter) => {
             const originalText = counter.textContent;
@@ -415,7 +376,7 @@ class AnimationController {
             const suffixMatch = originalText.match(/[^0-9.]+$/); // Matches any non-digit characters at the end
             const suffix = suffixMatch ? suffixMatch[0] : ''; // Get the matched suffix or an empty string
         
-            const speed = 100; // Doubled speed - was 200, now 100
+            const speed = 200; // Define your speed here
             const increment = target / speed;
             let current = 0;
         

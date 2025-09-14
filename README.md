@@ -27,9 +27,6 @@
 - **Hover Effects** throughout the interface
 - **Loading Animations** and transitions
 - **AI-Powered Chatbot Widget** for visitor engagement
-- **Horror Mode Easter Egg** - Hidden crimson theme with atmospheric effects
-- **Dynamic Cloud Torrent** - Dramatic sweeping clouds during theme convergence
-- **Pulsing Bloodmoon** - Authentic lunar texture with red aura effects
 
 ### 📄 **Resume Integration**
 - **Multiple Download Options** in hero and contact sections
@@ -140,19 +137,11 @@ The portfolio uses a sophisticated theming system with CSS custom properties:
 - Cards: `#1a202c` (Dark Blue)
 - Text: `#f7fafc` (Light Gray)
 
-**Horror Mode (Easter Egg):**
-- Deep crimson overlays with atmospheric effects
-- Pulsing bloodmoon texture with red aura
-- Dramatic cloud torrent animations during convergence
-- Mobile-responsive positioning and timing
-
 ### Animation System
 - **Theme Transitions**: 0.8s cubic-bezier easing
 - **Big Icon Animations**: Scale + rotation effects
 - **Hover Effects**: Consistent micro-interactions
 - **Scroll Animations**: Intersection Observer powered
-- **Horror Mode Effects**: Crimson overlays, pulsing bloodmoon, torrent clouds
-- **Mobile-Optimized Animations**: Responsive cloud positioning and timing
 
 ## 🤖 Chatbot Integration
 

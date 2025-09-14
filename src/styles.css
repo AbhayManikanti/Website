@@ -2078,154 +2078,6 @@ body.theme-transitioning::before {
     100% { text-shadow: 0 0 20px #dc2626, 0 0 30px #dc2626; }
 }
 
-/* Cloud Torrent Effect */
-.cloud-torrent {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 8;
-}
-
-.cloud-icon {
-    position: absolute;
-    color: #1a1a1a;
-    font-size: 15rem;
-    opacity: 0;
-    text-shadow: 0 0 60px rgba(220, 38, 38, 1);
-    transform-origin: center;
-    transform: scaleX(16) scaleY(4);
-}
-
-.cloud-torrent.active .cloud-icon {
-    animation-duration: 2.2s;
-    animation-timing-function: linear;
-    animation-fill-mode: forwards;
-}
-
-/* Mobile cloud timing and positioning adjustment */
-@media (max-width: 768px) {
-    .cloud-torrent.active .cloud-icon {
-        animation-duration: 2.2s;
-    }
-    
-    /* Position clouds just off-screen on mobile for smooth entrance */
-    .cloud-1, .cloud-3, .cloud-5, .cloud-7, .cloud-9, .cloud-11, .cloud-13, .cloud-15, .cloud-17, .cloud-19, .cloud-21, .cloud-23, .cloud-25, .cloud-27, .cloud-29, .cloud-31, .cloud-33, .cloud-35 { 
-        left: -800px !important; 
-    }
-    .cloud-2, .cloud-4, .cloud-6, .cloud-8, .cloud-10, .cloud-12, .cloud-14, .cloud-16, .cloud-18, .cloud-20, .cloud-22, .cloud-24, .cloud-26, .cloud-28, .cloud-30, .cloud-32, .cloud-34 { 
-        right: -800px !important; 
-    }
-    
-    /* Adjust mobile keyframes for smoother entrance */
-    @keyframes sweepRight {
-        0% { 
-            opacity: 1; 
-            transform: translateX(0);
-        }
-        88% { 
-            opacity: 1; 
-            transform: translateX(calc(100vw + 600px));
-        }
-        100% { 
-            opacity: 0; 
-            transform: translateX(calc(100vw + 800px));
-        }
-    }
-
-    @keyframes sweepLeft {
-        0% { 
-            opacity: 1; 
-            transform: translateX(0);
-        }
-        88% { 
-            opacity: 1; 
-            transform: translateX(calc(-100vw - 600px));
-        }
-        100% { 
-            opacity: 0; 
-            transform: translateX(calc(-100vw - 800px));
-        }
-    }
-}
-
-/* Individual cloud positioning - Complete screen coverage */
-.cloud-1 { top: -2%; left: -1600px; animation-name: sweepRight; animation-delay: 0s; }
-.cloud-2 { top: 2%; right: -1600px; animation-name: sweepLeft; animation-delay: 0s; }
-.cloud-3 { top: 6%; left: -1600px; animation-name: sweepRight; animation-delay: 0.01s; }
-.cloud-4 { top: 10%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.01s; }
-.cloud-5 { top: 14%; left: -1600px; animation-name: sweepRight; animation-delay: 0.02s; }
-.cloud-6 { top: 18%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.02s; }
-.cloud-7 { top: 22%; left: -1600px; animation-name: sweepRight; animation-delay: 0.03s; }
-.cloud-8 { top: 26%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.03s; }
-.cloud-9 { top: 30%; left: -1600px; animation-name: sweepRight; animation-delay: 0.04s; }
-.cloud-10 { top: 34%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.04s; }
-.cloud-11 { top: 38%; left: -1600px; animation-name: sweepRight; animation-delay: 0.05s; }
-.cloud-12 { top: 42%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.05s; }
-.cloud-13 { top: 46%; left: -1600px; animation-name: sweepRight; animation-delay: 0.06s; }
-.cloud-14 { top: 50%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.06s; }
-.cloud-15 { top: 54%; left: -1600px; animation-name: sweepRight; animation-delay: 0.07s; }
-.cloud-16 { top: 58%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.07s; }
-.cloud-17 { top: 62%; left: -1600px; animation-name: sweepRight; animation-delay: 0.08s; }
-.cloud-18 { top: 66%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.08s; }
-.cloud-19 { top: 70%; left: -1600px; animation-name: sweepRight; animation-delay: 0.09s; }
-.cloud-20 { top: 74%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.09s; }
-.cloud-21 { top: 78%; left: -1600px; animation-name: sweepRight; animation-delay: 0.1s; }
-.cloud-22 { top: 82%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.1s; }
-.cloud-23 { top: 86%; left: -1600px; animation-name: sweepRight; animation-delay: 0.11s; }
-.cloud-24 { top: 90%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.11s; }
-.cloud-25 { top: 94%; left: -1600px; animation-name: sweepRight; animation-delay: 0.12s; }
-.cloud-26 { top: 98%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.12s; }
-.cloud-27 { top: 1%; left: -1600px; animation-name: sweepRight; animation-delay: 0.13s; }
-.cloud-28 { top: 5%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.13s; }
-.cloud-29 { top: 9%; left: -1600px; animation-name: sweepRight; animation-delay: 0.14s; }
-.cloud-30 { top: 13%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.14s; }
-.cloud-31 { top: 17%; left: -1600px; animation-name: sweepRight; animation-delay: 0.15s; }
-.cloud-32 { top: 21%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.15s; }
-.cloud-33 { top: 25%; left: -1600px; animation-name: sweepRight; animation-delay: 0.16s; }
-.cloud-34 { top: 29%; right: -1600px; animation-name: sweepLeft; animation-delay: 0.16s; }
-.cloud-35 { top: 33%; left: -1600px; animation-name: sweepRight; animation-delay: 0.17s; }
-
-@keyframes sweepRight {
-    0% { 
-        opacity: 0; 
-        transform: translateX(0);
-    }
-    12% { 
-        opacity: 1; 
-        transform: translateX(300px);
-    }
-    88% { 
-        opacity: 1; 
-        transform: translateX(calc(100vw + 800px));
-    }
-    100% { 
-        opacity: 0; 
-        transform: translateX(calc(100vw + 1200px));
-    }
-}
-
-@keyframes sweepLeft {
-    0% { 
-        opacity: 0; 
-        transform: translateX(0);
-    }
-    12% { 
-        opacity: 1; 
-        transform: translateX(-300px);
-    }
-    88% { 
-        opacity: 1; 
-        transform: translateX(calc(-100vw - 800px));
-    }
-    100% { 
-        opacity: 0; 
-        transform: translateX(calc(-100vw - 1200px));
-    }
-}
-
 /* Horror Mode Effects */
 .horror-mode {
     animation: horrorGlow 3s ease-in-out infinite alternate;
@@ -2477,21 +2329,18 @@ body.theme-transitioning::before {
         transform: translate(-50%, -50%);
     }
     
-    /* Fixed convergence animation for mobile - preserve opacity and use proper scaling */
     .red-moon-convergence.converging .converging-sun {
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%) scale(1.2);
-        opacity: 1;
-        animation: convergeSunVertical 3s ease-in-out forwards;
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
     }
 
     .red-moon-convergence.converging .converging-moon {
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%) scale(1.2);
-        opacity: 1;
-        animation: convergeMoonVertical 3s ease-in-out forwards;
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
     }
     
     .converging-sun,
@@ -2511,37 +2360,6 @@ body.theme-transitioning::before {
     
     .easter-subtitle {
         font-size: 0.8rem;
-    }
-}
-
-/* Mobile convergence animations */
-@keyframes convergeSunVertical {
-    0% {
-        transform: translate(-50%, -50%) scale(1.2);
-        opacity: 1;
-    }
-    70% {
-        transform: translate(-50%, -50%) scale(1.5);
-        opacity: 0.8;
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(0.2);
-        opacity: 0;
-    }
-}
-
-@keyframes convergeMoonVertical {
-    0% {
-        transform: translate(-50%, -50%) scale(1.2);
-        opacity: 1;
-    }
-    70% {
-        transform: translate(-50%, -50%) scale(1.5);
-        opacity: 0.8;
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(0.2);
-        opacity: 0;
     }
 }
 
@@ -2588,33 +2406,16 @@ body.theme-transitioning::before {
     width: 60px;
     height: 60px;
     margin: 0 auto 15px auto;
-    background: url('./bloodmoon.png') center/cover no-repeat #8b0000;
+    background-image: url('../bloodmoon.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     border-radius: 50%;
-    overflow: hidden;
-    position: relative;
-    z-index: 10;
     box-shadow: 0 0 15px rgba(139, 0, 0, 1),
                 0 0 25px rgba(220, 38, 38, 0.9),
                 0 0 35px rgba(239, 68, 68, 0.7),
                 0 0 45px rgba(248, 113, 113, 0.5);
     animation: moonPulse 2s ease-in-out infinite;
-    font-size: 0; /* Hide any text content */
-    color: transparent; /* Make any text invisible */
-    text-indent: -9999px; /* Push any text off-screen */
-}
-
-/* Bloodmoon texture layer - ensures image is always on top */
-.crimson-icon::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('./bloodmoon.png') center/cover no-repeat;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 15; /* Higher than any other element */
 }
 
 .crimson-message p {
