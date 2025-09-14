@@ -2477,18 +2477,21 @@ body.theme-transitioning::before {
         transform: translate(-50%, -50%);
     }
     
+    /* Fixed convergence animation for mobile - preserve opacity and use proper scaling */
     .red-moon-convergence.converging .converging-sun {
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%) scale(0);
-        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+        animation: convergeSunVertical 3s ease-in-out forwards;
     }
 
     .red-moon-convergence.converging .converging-moon {
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%) scale(0);
-        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+        animation: convergeMoonVertical 3s ease-in-out forwards;
     }
     
     .converging-sun,
@@ -2508,6 +2511,37 @@ body.theme-transitioning::before {
     
     .easter-subtitle {
         font-size: 0.8rem;
+    }
+}
+
+/* Mobile convergence animations */
+@keyframes convergeSunVertical {
+    0% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+    }
+    70% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(0.2);
+        opacity: 0;
+    }
+}
+
+@keyframes convergeMoonVertical {
+    0% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+    }
+    70% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(0.2);
+        opacity: 0;
     }
 }
 
@@ -2554,7 +2588,7 @@ body.theme-transitioning::before {
     width: 60px;
     height: 60px;
     margin: 0 auto 15px auto;
-    background-image: url('../bloodmoon.png');
+    background-image: url('./bloodmoon.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
