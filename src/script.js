@@ -122,7 +122,7 @@ class ThemeController {
             <div class="red-moon-convergence">
                 <div class="converging-sun"><i class="fas fa-sun"></i></div>
                 <div class="converging-moon"><i class="fas fa-moon"></i></div>
-                <div class="red-moon"><i class="fas fa-circle"></i></div>
+                <div class="red-moon"></div>
             </div>
             <div class="easter-egg-text">
                 <h2 class="easter-title">Easter Egg Unlocked</h2>
