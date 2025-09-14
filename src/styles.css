@@ -1391,8 +1391,10 @@ body.theme-transitioning::before {
         top: 70px;
         left: 0;
         width: 100vw;
-        background: rgba(255,255,255,0.97);
+        background: var(--card-bg);
+        backdrop-filter: blur(20px);
         box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border-color);
         z-index: 999;
         padding: 32px 0;
         gap: 24px;
@@ -1408,29 +1410,37 @@ body.theme-transitioning::before {
     }
     
     .hero-visual {
-        min-height: 400px;
+        min-height: 350px;
         height: auto;
-        max-height: 500px;
+        max-height: 400px;
+        padding: 20px 0;
     }
     
     .hero-shape {
-        width: 350px;
-        height: 350px;
-        min-width: 350px;
-        min-height: 350px;
-        max-width: 350px;
-        max-height: 350px;
+        width: 280px;
+        height: 280px;
+        min-width: 280px;
+        min-height: 280px;
+        max-width: 280px;
+        max-height: 280px;
+        margin: 10px auto;
     }
     
     .project-img2 {
-        width: 350px;
-        height: 350px;
-        min-width: 350px;
-        min-height: 350px;
-        max-width: 350px;
-        max-height: 350px;
+        width: 280px;
+        height: 280px;
+        min-width: 280px;
+        min-height: 280px;
+        max-width: 280px;
+        max-height: 280px;
+        margin: 10px auto;
     }
-    
+
+    .floating-card {
+        padding: 12px 16px;
+        font-size: 14px;
+        display: none; /* Hide floating cards on mobile to prevent overlap */
+    }
     
     .container {
         padding: 0 16px;
@@ -1484,27 +1494,30 @@ body.theme-transitioning::before {
 
 @media (max-width: 480px) {
     .hero-visual {
-        min-height: 350px;
+        min-height: 300px;
         height: auto;
-        max-height: 400px;
+        max-height: 350px;
+        padding: 15px 0;
     }
     
     .hero-shape {
-        width: 350px;
-        height: 350px;
-        min-width: 350px;
-        min-height: 350px;
-        max-width: 350px;
-        max-height: 350px;
+        width: 250px;
+        height: 250px;
+        min-width: 250px;
+        min-height: 250px;
+        max-width: 250px;
+        max-height: 250px;
+        margin: 8px auto;
     }
     
     .project-img2 {
-        width: 350px;
-        height: 350px;
-        min-width: 350px;
-        min-height: 350px;
-        max-width: 350px;
-        max-height: 350px;
+        width: 250px;
+        height: 250px;
+        min-width: 250px;
+        min-height: 250px;
+        max-width: 250px;
+        max-height: 250px;
+        margin: 8px auto;
     }
     
     
@@ -1546,25 +1559,28 @@ body.theme-transitioning::before {
 }
 @media (max-width: 360px) {
     .hero-visual {
-        min-height: 300px;
+        min-height: 280px;
+        padding: 10px 0;
     }
     
     .hero-shape {
-        width: 300px;
-        height: 300px;
-        min-width: 300px;
-        min-height: 300px;
-        max-width: 300px;
-        max-height: 300px;
+        width: 220px;
+        height: 220px;
+        min-width: 220px;
+        min-height: 220px;
+        max-width: 220px;
+        max-height: 220px;
+        margin: 5px auto;
     }
     
     .project-img2 {
-        width: 300px;
-        height: 300px;
-        min-width: 300px;
-        min-height: 300px;
-        max-width: 300px;
-        max-height: 300px;
+        width: 220px;
+        height: 220px;
+        min-width: 220px;
+        min-height: 220px;
+        max-width: 220px;
+        max-height: 220px;
+        margin: 5px auto;
     }
     
 }
