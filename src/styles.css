@@ -2588,16 +2588,33 @@ body.theme-transitioning::before {
     width: 60px;
     height: 60px;
     margin: 0 auto 15px auto;
-    background-image: url('./bloodmoon.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background: url('./bloodmoon.png') center/cover no-repeat #8b0000;
     border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    z-index: 10;
     box-shadow: 0 0 15px rgba(139, 0, 0, 1),
                 0 0 25px rgba(220, 38, 38, 0.9),
                 0 0 35px rgba(239, 68, 68, 0.7),
                 0 0 45px rgba(248, 113, 113, 0.5);
     animation: moonPulse 2s ease-in-out infinite;
+    font-size: 0; /* Hide any text content */
+    color: transparent; /* Make any text invisible */
+    text-indent: -9999px; /* Push any text off-screen */
+}
+
+/* Bloodmoon texture layer - ensures image is always on top */
+.crimson-icon::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('./bloodmoon.png') center/cover no-repeat;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 15; /* Higher than any other element */
 }
 
 .crimson-message p {
