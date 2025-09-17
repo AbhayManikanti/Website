@@ -2,7 +2,7 @@
 
 > A modern, responsive portfolio website showcasing AI expertise, automation solutions, and professional achievements with advanced theming and interactive features.
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge)](https://abhaymanikanti.netlify.app)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge)](https://abhaymanikanti.com)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?style=for-the-badge&logo=github)](https://github.com/AbhayManikanti/Website)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/abhay-manikanti-504a6b1b3)
 
