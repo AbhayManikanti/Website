@@ -1,24 +1,8 @@
 User-agent: *
 Allow: /
 
-# Sitemap location
+# Sitemap location for maximum SEO discoverability
 Sitemap: https://www.abhaymanikanti.com/sitemap.xml
 
-# Specific crawling preferences
-Allow: /src/
-Allow: /*.pdf
-Allow: /*.png
-Allow: /*.jpeg
-Allow: /*.jpg
-Allow: /manifest.json
-Allow: /sw.js
-
-# Prevent crawling of unnecessary files
-Disallow: /src/styles.css
-Disallow: /src/script.js
-Disallow: /.git/
-Disallow: /node_modules/
-Disallow: /.netlify/
-
-# Crawl delay (optional - be respectful to servers)
-Crawl-delay: 1
+# Allow everything - no restrictions
+# This portfolio website is fully public with no confidential content
