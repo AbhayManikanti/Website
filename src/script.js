@@ -941,9 +941,14 @@ class PWAInstallController {
         const cancelBtn = document.getElementById('pwa-popup-cancel');
         const installBtn = document.getElementById('pwa-popup-install');
 
-        // Main install button click - show detailed popup
+        // Main install button click - show appropriate popup
         installButton?.addEventListener('click', () => {
-            this.showInstallPopup();
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            if (isIOS) {
+                this.showIOSInstallInstructions();
+            } else {
+                this.showInstallPopup();
+            }
         });
 
         // Popup backdrop click - close popup
@@ -1032,8 +1037,22 @@ class PWAInstallController {
     }
 
     setupInstallPromptListener() {
+        // Check if this is iOS
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        
+        console.log('📱 Device detection:', { isIOS, isStandalone });
+        
+        if (isIOS && !isStandalone) {
+            console.log('📱 iOS device detected - showing install button for manual installation');
+            // iOS doesn't have beforeinstallprompt, show button immediately
+            this.showInstallButton();
+            return;
+        }
+        
+        // Standard Android/Desktop PWA installation
         window.addEventListener('beforeinstallprompt', (e) => {
-            console.log('💡 PWA install prompt available');
+            console.log('💡 PWA install prompt available (Android/Desktop)');
             
             // Prevent the mini-infobar from appearing
             e.preventDefault();
@@ -1146,6 +1165,15 @@ class PWAInstallController {
     }
 
     async triggerInstall() {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        
+        if (isIOS) {
+            // iOS doesn't support programmatic installation
+            console.log('📱 iOS detected - showing manual installation instructions');
+            this.showIOSInstallInstructions();
+            return;
+        }
+        
         if (!this.deferredPrompt) {
             console.warn('No install prompt available');
             this.showFallbackInstructions();
@@ -1153,7 +1181,7 @@ class PWAInstallController {
         }
 
         try {
-            // Show the install prompt
+            // Show the install prompt (Android/Desktop)
             const result = await this.deferredPrompt.prompt();
             
             console.log('Install prompt result:', result.outcome);
@@ -1355,6 +1383,78 @@ class PWAInstallController {
                 console.log('📱 PWA install available via logo click');
             }
         }
+    }
+
+    showIOSInstallInstructions() {
+        // Hide regular popup and show iOS-specific instructions
+        this.hideInstallPopup();
+        
+        // Create iOS instruction modal
+        const backdrop = document.getElementById('pwa-popup-backdrop');
+        const popup = document.getElementById('pwa-install-popup');
+        
+        if (!backdrop || !popup) return;
+        
+        // Update popup content for iOS
+        popup.innerHTML = `
+            <div class="pwa-popup-header">
+                <img src="ico.png" alt="Abhay's Portfolio" class="pwa-popup-icon">
+                <div class="pwa-popup-info">
+                    <h3>Install on iPhone/iPad</h3>
+                    <p>Add to your home screen for a better experience</p>
+                </div>
+            </div>
+            <div class="pwa-popup-content">
+                <div class="ios-install-steps">
+                    <div class="ios-step">
+                        <div class="step-number">1</div>
+                        <div class="step-text">
+                            <strong>Tap the Share button</strong>
+                            <div class="step-icon">
+                                <i class="fas fa-share" style="color: #007AFF;"></i>
+                            </div>
+                            <small>Located at the bottom of Safari</small>
+                        </div>
+                    </div>
+                    <div class="ios-step">
+                        <div class="step-number">2</div>
+                        <div class="step-text">
+                            <strong>Select "Add to Home Screen"</strong>
+                            <div class="step-icon">
+                                <i class="fas fa-plus-square" style="color: #007AFF;"></i>
+                            </div>
+                            <small>Scroll down if you don't see it</small>
+                        </div>
+                    </div>
+                    <div class="ios-step">
+                        <div class="step-number">3</div>
+                        <div class="step-text">
+                            <strong>Tap "Add"</strong>
+                            <small>The app will appear on your home screen</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pwa-popup-actions">
+                <button class="pwa-popup-btn pwa-popup-btn-primary" id="ios-got-it">Got It!</button>
+            </div>
+        `;
+        
+        // Show the modal
+        backdrop.classList.add('visible');
+        popup.classList.add('visible');
+        
+        // Handle close
+        const gotItBtn = popup.querySelector('#ios-got-it');
+        const closeModal = () => {
+            backdrop.classList.remove('visible');
+            popup.classList.remove('visible');
+        };
+        
+        gotItBtn?.addEventListener('click', closeModal);
+        backdrop?.addEventListener('click', closeModal);
+        
+        console.log('📱 iOS install instructions shown');
     }
 
     showFallbackInstructions() {

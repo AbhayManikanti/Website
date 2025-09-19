@@ -2207,6 +2207,65 @@ body.theme-transitioning::before {
     color: var(--text-primary);
 }
 
+/* iOS Installation Instructions */
+.ios-install-steps {
+    margin: 20px 0;
+}
+
+.ios-step {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border-left: 4px solid #007AFF;
+}
+
+.step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    background: #007AFF;
+    color: white;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 14px;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.step-text {
+    flex: 1;
+}
+
+.step-text strong {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.step-text small {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.step-icon {
+    display: inline-flex;
+    align-items: center;
+    margin: 8px 0;
+    font-size: 24px;
+}
+
+.step-icon i {
+    margin-right: 8px;
+}
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
     .pwa-install-container {
