@@ -1448,17 +1448,23 @@ if ('serviceWorker' in navigator && navigator.serviceWorker) {
         console.log('[Main] Current origin:', window.location.origin);
         console.log('[Main] SW support check passed');
         
+        // Detect testing environments
+        const isTestEnvironment = navigator.userAgent.includes('Google') || 
+                                 navigator.userAgent.includes('Lighthouse') ||
+                                 window.navigator.webdriver;
+        console.log('[Main] Test environment detected:', isTestEnvironment);
+        
         try {
             // Check security context
             if (!window.isSecureContext) {
                 throw new Error('Service Workers require HTTPS or localhost');
             }
             
-            // Try multiple registration strategies
+            // Try Google-friendly minimal SW first, then full-featured version
             const registrationAttempts = [
+                { path: '/sw-simple.js', scope: '/' },
                 { path: '/sw.js', scope: '/' },
-                { path: './sw.js', scope: './' },
-                { path: `${window.location.origin}/sw.js`, scope: '/' }
+                { path: './sw.js', scope: './' }
             ];
             
             let registration = null;

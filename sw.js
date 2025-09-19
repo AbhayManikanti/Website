@@ -1,9 +1,9 @@
 // Service Worker for Abhay Manikanti Portfolio
-// Version: 1.0.0
+// Version: 1.1.0 - Google-optimized
 
-const CACHE_NAME = 'abhay-portfolio-v1';
-const STATIC_CACHE_NAME = 'abhay-static-v1';
-const DYNAMIC_CACHE_NAME = 'abhay-dynamic-v1';
+const CACHE_NAME = 'abhay-portfolio-v1-1';
+const STATIC_CACHE_NAME = 'abhay-static-v1-1';
+const DYNAMIC_CACHE_NAME = 'abhay-dynamic-v1-1';
 
 // Assets to cache immediately on install
 const STATIC_ASSETS = [
