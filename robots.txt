@@ -1,8 +1,43 @@
+# Robots.txt for Abhay Manikanti's Portfolio Website
+# This file tells search engine crawlers how to access and index the site
+
+# Allow all crawlers full access to everything
 User-agent: *
 Allow: /
 
+# Specific rules for major search engines (optional but good practice)
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Ensure CSS and JS files are crawlable for proper rendering
+Allow: /src/styles.css
+Allow: /src/script.js
+Allow: /manifest.json
+Allow: /sw.js
+Allow: /sw-simple.js
+
+# Allow important assets
+Allow: /icons/
+Allow: /images/
+Allow: /assets/
+Allow: /*.pdf$
+
+# Crawl delay (optional - prevents overwhelming your server)
+# Crawl-delay: 1
+
 # Sitemap location for maximum SEO discoverability
 Sitemap: https://www.abhaymanikanti.com/sitemap.xml
+Sitemap: https://abhaymanikanti.com/sitemap.xml
 
-# Allow everything - no restrictions
-# This portfolio website is fully public with no confidential content
+# Host directive (helps with canonicalization)
+Host: https://www.abhaymanikanti.com
+
+# Additional sitemaps (if you add them later)
+# Sitemap: https://www.abhaymanikanti.com/sitemap-images.xml
+# Sitemap: https://www.abhaymanikanti.com/sitemap-projects.xml
