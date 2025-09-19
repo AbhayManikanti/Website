@@ -1441,26 +1441,69 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Service Worker registration (for PWA capabilities)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
+if ('serviceWorker' in navigator && navigator.serviceWorker) {
+    // Use a more robust approach that works in all environments
+    const registerServiceWorker = async () => {
         console.log('[Main] Registering service worker...');
+        console.log('[Main] Current origin:', window.location.origin);
+        console.log('[Main] SW support check passed');
         
-        navigator.serviceWorker.register('/sw.js', {
-            scope: '/'
-        })
-        .then(registration => {
-            console.log('[Main] SW registered successfully:', registration);
+        try {
+            // Check security context
+            if (!window.isSecureContext) {
+                throw new Error('Service Workers require HTTPS or localhost');
+            }
             
-            // Check for updates
+            // Try multiple registration strategies
+            const registrationAttempts = [
+                { path: '/sw.js', scope: '/' },
+                { path: './sw.js', scope: './' },
+                { path: `${window.location.origin}/sw.js`, scope: '/' }
+            ];
+            
+            let registration = null;
+            let lastError = null;
+            
+            for (const attempt of registrationAttempts) {
+                try {
+                    console.log(`[Main] Attempting SW registration with path: ${attempt.path}, scope: ${attempt.scope}`);
+                    
+                    registration = await navigator.serviceWorker.register(attempt.path, {
+                        scope: attempt.scope,
+                        updateViaCache: 'none'
+                    });
+                    
+                    console.log('[Main] SW registered successfully:', registration);
+                    console.log('[Main] SW scope:', registration.scope);
+                    console.log('[Main] SW installing:', registration.installing?.state);
+                    console.log('[Main] SW waiting:', registration.waiting?.state);
+                    console.log('[Main] SW active:', registration.active?.state);
+                    break; // Success, exit loop
+                    
+                } catch (attemptError) {
+                    console.warn(`[Main] Registration attempt failed for ${attempt.path}:`, attemptError.message);
+                    lastError = attemptError;
+                    continue; // Try next strategy
+                }
+            }
+            
+            if (!registration) {
+                throw lastError || new Error('All registration attempts failed');
+            }
+            
+            // Set up event listeners for successful registration
             registration.addEventListener('updatefound', () => {
                 const newWorker = registration.installing;
                 console.log('[Main] New service worker installing...');
                 
-                newWorker.addEventListener('statechange', () => {
+                newWorker?.addEventListener('statechange', () => {
+                    console.log('[Main] SW state changed to:', newWorker.state);
                     if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                        console.log('[Main] New service worker installed, prompting for update');
+                        console.log('[Main] New service worker installed');
                         // Optionally show update notification
-                        showUpdateNotification();
+                        if (typeof showUpdateNotification === 'function') {
+                            showUpdateNotification();
+                        }
                     }
                 });
             });
@@ -1470,72 +1513,116 @@ if ('serviceWorker' in navigator) {
                 console.log('[Main] Message from SW:', event.data);
             });
             
-            // Check if SW is controlling the page
+            // Check controller status
             if (navigator.serviceWorker.controller) {
-                console.log('[Main] Page is controlled by service worker');
+                console.log('[Main] ✅ Page is controlled by service worker');
+                console.log('[Main] Controller SW state:', navigator.serviceWorker.controller.state);
             } else {
-                console.log('[Main] Page is not controlled by service worker yet');
+                console.log('[Main] ⏳ Page is not controlled yet - SW will control on next visit');
             }
-        })
-        .catch(error => {
-            console.warn('[Main] SW registration failed:', error);
-            // Don't throw error, just log it - site should work without SW
-        });
-        
-        // Listen for SW controller changes (when new SW takes control)
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-            console.log('[Main] Service worker controller changed, reloading page');
-            window.location.reload();
-        });
-    });
+            
+            // Attempt to update
+            try {
+                await registration.update();
+                console.log('[Main] SW update check completed');
+            } catch (updateError) {
+                console.log('[Main] SW update check failed (this is normal):', updateError.message);
+            }
+            
+            return registration;
+            
+        } catch (error) {
+            console.warn('[Main] ❌ Service Worker registration completely failed');
+            console.warn('[Main] Error:', error.message);
+            console.warn('[Main] Error details:', error);
+            
+            // Provide helpful debugging information
+            console.group('[Main] SW Debugging Information:');
+            console.log('• Secure context:', window.isSecureContext);
+            console.log('• SW support:', 'serviceWorker' in navigator);
+            console.log('• Current URL:', window.location.href);
+            console.log('• Origin:', window.location.origin);
+            console.log('• Protocol:', window.location.protocol);
+            console.groupEnd();
+            
+            if (error.message.includes('rejected') || error.name === 'TypeError') {
+                console.warn('[Main] 🔍 This appears to be a hosting/network issue.');
+                console.warn('[Main] Common causes:');
+                console.warn('  • CDN or hosting provider blocking service workers');
+                console.warn('  • Network security policies');
+                console.warn('  • Browser security restrictions in production');
+                console.warn('  • Service worker file not properly served');
+            }
+            
+            console.log('[Main] 💡 PWA features will be limited but site remains fully functional');
+            return null;
+        }
+    };
     
-    // Function to show update notification
-    function showUpdateNotification() {
-        // Create a subtle notification about available update
-        const notification = document.createElement('div');
-        notification.id = 'sw-update-notification';
-        notification.innerHTML = `
-            <div style="
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #6366f1;
-                color: white;
-                padding: 12px 20px;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                z-index: 10000;
-                font-size: 14px;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            ">
-                <i class="fas fa-sync-alt" style="margin-right: 8px;"></i>
-                New version available! Click to update.
-            </div>
-        `;
-        
-        notification.addEventListener('click', () => {
-            if (navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
-            }
-        });
-        
-        document.body.appendChild(notification);
-        
-        // Auto-hide after 10 seconds
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.style.opacity = '0';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.remove();
-                    }
-                }, 300);
-            }
-        }, 10000);
+    // Register when page loads
+    if (document.readyState === 'loading') {
+        window.addEventListener('load', registerServiceWorker);
+    } else {
+        // Page already loaded
+        registerServiceWorker();
     }
 } else {
-    console.warn('[Main] Service workers not supported in this browser');
+    console.warn('[Main] ❌ Service Workers not supported in this browser');
+    console.log('[Main] PWA features unavailable but site will work normally');
+}
+
+// Listen for SW controller changes (when new SW takes control)
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('[Main] Service worker controller changed, reloading page');
+        window.location.reload();
+    });
+}
+
+// Function to show update notification
+function showUpdateNotification() {
+    // Create a subtle notification about available update
+    const notification = document.createElement('div');
+    notification.id = 'sw-update-notification';
+    notification.innerHTML = `
+        <div style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #6366f1;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        ">
+            <i class="fas fa-sync-alt" style="margin-right: 8px;"></i>
+            New version available! Click to update.
+        </div>
+    `;
+    
+    notification.addEventListener('click', () => {
+        if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+        }
+    });
+    
+    document.body.appendChild(notification);
+    
+    // Auto-hide after 10 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, 10000);
 }
 
 // Error handling
