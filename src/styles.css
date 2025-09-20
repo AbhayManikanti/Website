@@ -1813,10 +1813,6 @@ body.theme-transitioning::before {
         height: 400px;
         right: -8px;
     }
-    .chat-notification {
-        right: 16px;
-    }
-   
 }
 
 @media (max-width: 480px) {
@@ -2103,7 +2099,7 @@ body.theme-transitioning::before {
     position: relative;
     overflow: hidden;
     max-width: 280px;
-    white-space: nowrap;
+    white-space: nowrap; /* Default no-wrap for desktop */
 }
 
 .pwa-install-button:hover {
@@ -2178,163 +2174,122 @@ body.theme-transitioning::before {
     100% { box-shadow: var(--shadow-xl); }
 }
 
-/* Button collapse to sparks animation */
-.pwa-install-container.collapsing {
+/* Button collapse for electric stream animation */
+.pwa-install-container.collapsing,
+.pwa-install-container.exploding {
     z-index: 1003;
 }
 
-.pwa-install-container.collapsing .pwa-install-button {
-    animation: buttonCollapseToSparks 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+.pwa-install-container.collapsing .pwa-install-button,
+.pwa-install-container.exploding .pwa-install-button {
+    animation: buttonCollapseForStream 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-@keyframes buttonCollapseToSparks {
+@keyframes buttonCollapseForStream {
     0% {
-        transform: scale(1);
+        transform: scale(1) rotate(0deg);
         opacity: 1;
-        filter: brightness(1);
+        filter: brightness(1) blur(0px) contrast(1);
         box-shadow: var(--shadow-xl);
-    }
-    15% {
-        transform: scale(1.05);
-        opacity: 1;
-        filter: brightness(1.2);
-        box-shadow: 0 0 20px rgba(220, 38, 38, 0.6), var(--shadow-xl);
-    }
-    30% {
-        transform: scale(0.9);
-        opacity: 0.9;
-        filter: brightness(1.4) saturate(1.5);
-        box-shadow: 0 0 30px rgba(220, 38, 38, 0.8), 0 0 50px rgba(255, 255, 255, 0.4);
-    }
-    60% {
-        transform: scale(0.4);
-        opacity: 0.6;
-        filter: brightness(2) saturate(2);
-        box-shadow: 0 0 40px rgba(220, 38, 38, 1), 0 0 60px rgba(255, 255, 255, 0.8);
-    }
-    85% {
-        transform: scale(0.1);
-        opacity: 0.2;
-        filter: brightness(3) saturate(3);
-        box-shadow: 0 0 50px rgba(255, 255, 255, 1), 0 0 80px rgba(220, 38, 38, 1);
-    }
-    100% {
-        transform: scale(0);
-        opacity: 0;
-        visibility: hidden;
-        filter: brightness(4);
-        box-shadow: 0 0 60px rgba(255, 255, 255, 0), 0 0 100px rgba(220, 38, 38, 0);
-    }
-}
-
-/* Individual sparks from button explosion */
-.pwa-spark {
-    position: fixed;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 1002;
-}
-
-.pwa-spark.spark-to-logo {
-    animation: sparkToLogo var(--spark-duration, 1.5s) var(--spark-easing, cubic-bezier(0.2, 0.8, 0.2, 1)) forwards;
-    animation-delay: var(--spark-delay, 0s);
-}
-
-@keyframes sparkToLogo {
-    0% {
-        opacity: 1;
-        transform: scale(1.8);
-        filter: brightness(3) saturate(2);
+        clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
     }
     10% {
-        opacity: 0.95;
-        transform: scale(1.4);
-        filter: brightness(2.5) saturate(1.8);
+        transform: scale(1.08) rotate(1deg);
+        opacity: 1;
+        filter: brightness(1.3) blur(0px) contrast(1.2);
+        box-shadow: 0 0 25px rgba(0, 255, 255, 0.7), 0 0 35px rgba(255, 255, 255, 0.4);
+        clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
     }
     25% {
-        opacity: 0.9;
-        transform: scale(1.1);
-        filter: brightness(2) saturate(1.5);
+        transform: scale(0.95) rotate(-2deg);
+        opacity: 0.95;
+        filter: brightness(1.6) blur(1px) contrast(1.5);
+        box-shadow: 0 0 35px rgba(0, 255, 255, 0.9), 0 0 45px rgba(255, 255, 255, 0.6);
+        clip-path: polygon(5% 5%, 95% 0%, 100% 90%, 0% 95%);
     }
-    50% {
+    45% {
+        transform: scale(0.7) rotate(3deg);
         opacity: 0.8;
-        transform: scale(0.9) translateX(calc(var(--spark-target-x, 0px) * 0.3)) translateY(calc(var(--spark-target-y, 0px) * 0.3));
-        filter: brightness(1.8) saturate(1.3);
+        filter: brightness(2.2) blur(2px) contrast(2) saturate(1.8);
+        box-shadow: 0 0 45px rgba(0, 255, 255, 1), 0 0 55px rgba(255, 255, 255, 0.8), 0 0 25px rgba(0, 200, 255, 0.6);
+        clip-path: polygon(10% 15%, 85% 5%, 90% 80%, 15% 90%);
     }
-    75% {
+    65% {
+        transform: scale(0.4) rotate(-5deg);
         opacity: 0.6;
-        transform: scale(0.7) translateX(calc(var(--spark-target-x, 0px) * 0.7)) translateY(calc(var(--spark-target-y, 0px) * 0.7));
-        filter: brightness(1.5) saturate(1.1);
+        filter: brightness(3) blur(4px) contrast(3) saturate(2.5);
+        box-shadow: 0 0 60px rgba(0, 255, 255, 1), 0 0 70px rgba(255, 255, 255, 1), 0 0 40px rgba(0, 200, 255, 0.8);
+        clip-path: polygon(20% 25%, 75% 15%, 80% 70%, 25% 85%);
     }
-    90% {
+    80% {
+        transform: scale(0.15) rotate(8deg);
         opacity: 0.3;
-        transform: scale(0.4) translateX(calc(var(--spark-target-x, 0px) * 0.9)) translateY(calc(var(--spark-target-y, 0px) * 0.9));
-        filter: brightness(1.2) saturate(1);
+        filter: brightness(4) blur(6px) contrast(4) saturate(3);
+        box-shadow: 0 0 80px rgba(0, 255, 255, 0.8), 0 0 90px rgba(255, 255, 255, 0.6), 0 0 50px rgba(0, 200, 255, 0.4);
+        clip-path: polygon(30% 40%, 60% 30%, 65% 55%, 35% 70%);
+    }
+    95% {
+        transform: scale(0.05) rotate(-12deg);
+        opacity: 0.1;
+        filter: brightness(5) blur(8px) contrast(5) saturate(4);
+        box-shadow: 0 0 100px rgba(0, 255, 255, 0.4), 0 0 120px rgba(255, 255, 255, 0.2);
+        clip-path: polygon(40% 45%, 55% 40%, 50% 50%, 45% 55%);
     }
     100% {
+        transform: scale(0) rotate(-15deg);
         opacity: 0;
-        transform: scale(0.1) translateX(var(--spark-target-x, 0px)) translateY(var(--spark-target-y, 0px));
-        filter: brightness(1) saturate(1);
+        visibility: hidden;
+        filter: brightness(6) blur(10px) contrast(6) saturate(5);
+        box-shadow: 0 0 150px rgba(0, 255, 255, 0), 0 0 200px rgba(255, 255, 255, 0);
+        clip-path: polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%);
     }
 }
 
-/* Electric red spark colors with white-hot centers */
-.pwa-spark:nth-child(8n+1) {
-    background: radial-gradient(circle, #ffffff 0%, #ffffff 20%, #ff4444 40%, #dc2626 70%, #b91c1c 100%);
-    width: 10px;
-    height: 10px;
-    box-shadow: 0 0 12px #ffffff, 0 0 20px #ff4444, 0 0 30px #dc2626;
+/* Electric Stream Animation Styles */
+.electric-stream-container {
+    pointer-events: none;
+    z-index: 9999;
 }
 
-.pwa-spark:nth-child(8n+2) {
-    background: radial-gradient(circle, #fffefe 0%, #ff6666 30%, #ef4444 60%, #dc2626 100%);
-    width: 6px;
-    height: 6px;
-    box-shadow: 0 0 8px #ffffff, 0 0 15px #ef4444;
+.electric-stream-particle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle, #ffffff 0%, #3b82f6 30%, #1e40af 70%, #1e3a8a 100%);
+    box-shadow: 
+        0 0 6px rgba(59, 130, 246, 0.8),
+        0 0 12px rgba(59, 130, 246, 0.6),
+        0 0 20px rgba(59, 130, 246, 0.4),
+        0 0 30px rgba(30, 64, 175, 0.3);
+    animation: electricPulse 0.3s ease-in-out infinite alternate;
 }
 
-.pwa-spark:nth-child(8n+3) {
-    background: radial-gradient(circle, #ffffff 0%, #ff8888 25%, #f87171 50%, #ef4444 100%);
-    width: 8px;
-    height: 8px;
-    box-shadow: 0 0 10px #ffffff, 0 0 18px #f87171, 0 0 25px #dc2626;
+@keyframes electricPulse {
+    0% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    100% {
+        transform: scale(1.2);
+        filter: brightness(1.3);
+    }
 }
 
-.pwa-spark:nth-child(8n+4) {
-    background: radial-gradient(circle, #fefefe 0%, #ffaaaa 35%, #fca5a5 70%, #f87171 100%);
-    width: 7px;
-    height: 7px;
-    box-shadow: 0 0 9px #ffffff, 0 0 16px #fca5a5;
+/* Theme-specific electric stream colors */
+[data-theme="dark"] .electric-stream-particle {
+    background: radial-gradient(circle, #ffffff 0%, #60a5fa 30%, #3b82f6 70%, #2563eb 100%);
+    box-shadow: 
+        0 0 8px rgba(96, 165, 250, 0.9),
+        0 0 16px rgba(59, 130, 246, 0.7),
+        0 0 25px rgba(37, 99, 235, 0.5);
 }
 
-.pwa-spark:nth-child(8n+5) {
-    background: radial-gradient(circle, #ffffff 0%, #ffffff 15%, #ff2222 35%, #dc2626 65%, #991b1b 100%);
-    width: 9px;
-    height: 9px;
-    box-shadow: 0 0 14px #ffffff, 0 0 22px #ff2222, 0 0 32px #dc2626;
-}
-
-.pwa-spark:nth-child(8n+6) {
-    background: radial-gradient(circle, #fffcfc 0%, #ff5555 40%, #ef4444 80%, #dc2626 100%);
-    width: 5px;
-    height: 5px;
-    box-shadow: 0 0 7px #ffffff, 0 0 14px #ef4444;
-}
-
-.pwa-spark:nth-child(8n+7) {
-    background: radial-gradient(circle, #ffffff 0%, #ff7777 20%, #f87171 45%, #ef4444 100%);
-    width: 8px;
-    height: 8px;
-    box-shadow: 0 0 11px #ffffff, 0 0 19px #f87171, 0 0 28px #dc2626;
-}
-
-.pwa-spark:nth-child(8n+8) {
-    background: radial-gradient(circle, #fefefe 0%, #ffbbbb 30%, #fca5a5 60%, #f87171 100%);
-    width: 6px;
-    height: 6px;
-    box-shadow: 0 0 8px #ffffff, 0 0 15px #fca5a5, 0 0 22px #f87171;
+[data-theme="horror"] .electric-stream-particle {
+    background: radial-gradient(circle, #ffffff 0%, #ef4444 30%, #dc2626 70%, #b91c1c 100%);
+    box-shadow: 
+        0 0 8px rgba(239, 68, 68, 0.9),
+        0 0 16px rgba(220, 38, 38, 0.7),
+        0 0 25px rgba(185, 28, 28, 0.5);
 }
 
 /* Logo glow effect when PWA install is available */
@@ -2415,6 +2370,71 @@ body.theme-transitioning::before {
         transform: scale(1);
         box-shadow: 0 0 8px rgba(127, 29, 29, 0.3);
         filter: brightness(1) saturate(1);
+    }
+}
+
+/* Themed logo pulse when stream arrives */
+.nav-logo.impact-flash-blue {
+    animation: logoPulseBlue 0.9s ease-out forwards;
+}
+
+@keyframes logoPulseBlue {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0px rgba(37, 99, 235, 0);
+        filter: brightness(1);
+    }
+    20% {
+        transform: scale(1.12);
+        box-shadow: 0 0 18px rgba(96, 165, 250, 0.8), 0 0 36px rgba(59, 130, 246, 0.5);
+        filter: brightness(1.2) saturate(1.2);
+    }
+    45% {
+        transform: scale(1.2);
+        box-shadow: 0 0 28px rgba(59, 130, 246, 0.9), 0 0 60px rgba(37, 99, 235, 0.6);
+        filter: brightness(1.35) saturate(1.4);
+    }
+    70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.6), 0 0 40px rgba(37, 99, 235, 0.4);
+        filter: brightness(1.2) saturate(1.2);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+        filter: brightness(1);
+    }
+}
+
+.nav-logo.impact-flash-red {
+    animation: logoPulseRed 0.9s ease-out forwards;
+}
+
+@keyframes logoPulseRed {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0px rgba(220, 38, 38, 0);
+        filter: brightness(1);
+    }
+    20% {
+        transform: scale(1.12);
+        box-shadow: 0 0 18px rgba(248, 113, 113, 0.85), 0 0 36px rgba(239, 68, 68, 0.5);
+        filter: brightness(1.2) saturate(1.3);
+    }
+    45% {
+        transform: scale(1.2);
+        box-shadow: 0 0 28px rgba(239, 68, 68, 0.95), 0 0 60px rgba(220, 38, 38, 0.6);
+        filter: brightness(1.4) saturate(1.5);
+    }
+    70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(239, 68, 68, 0.6), 0 0 40px rgba(220, 38, 38, 0.4);
+        filter: brightness(1.25) saturate(1.3);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+        filter: brightness(1);
     }
 }
 
@@ -2615,8 +2635,8 @@ body.theme-transitioning::before {
     margin-right: 8px;
 }
 
-/* Mobile responsiveness */
-@media (max-width: 768px) {
+/* Mobile responsiveness - Tablets and iPads */
+@media (max-width: 768px) and (min-height: 900px) {
     .pwa-install-container {
         bottom: 20px;
         right: 84px; /* Position to left of chatbot (60px + 24px spacing) */
@@ -2626,12 +2646,33 @@ body.theme-transitioning::before {
         padding: 14px 20px;
         font-size: 14px;
         max-width: 240px;
+        white-space: normal; /* Allow text wrapping */
+        line-height: 1.3;
+    }
+}
+
+/* Mobile phones - Position above theme toggle */
+@media (max-width: 768px) and (max-height: 900px) {
+    .pwa-install-container {
+        bottom: 90px; /* Above theme toggle (50px height + 20px bottom + 20px spacing) */
+        left: 20px;
+        right: 20px;
+    }
+    
+    .pwa-install-button {
+        padding: 14px 20px;
+        font-size: 14px;
+        max-width: none; /* Use full available width */
+        white-space: normal; /* Allow text wrapping */
+        line-height: 1.3;
+        justify-content: center; /* Center content */
     }
     
     .pwa-install-container.collapsed .pwa-install-button {
         width: 50px;
         height: 50px;
         padding: 13px;
+        margin: 0 auto; /* Center when collapsed */
     }
     
     .pwa-install-icon {
@@ -2647,20 +2688,25 @@ body.theme-transitioning::before {
 
 @media (max-width: 480px) {
     .pwa-install-container {
-        bottom: 16px;
-        right: 80px; /* Position to left of chatbot (60px + 20px spacing) */
+        bottom: 80px; /* Above theme toggle (45px height + 16px bottom + 19px spacing) */
+        left: 16px;
+        right: 16px;
     }
     
     .pwa-install-button {
         padding: 12px 16px;
         font-size: 13px;
-        max-width: 180px; /* Reduced to fit in smaller space */
+        max-width: none; /* Use full available width */
+        white-space: normal; /* Allow text wrapping */
+        line-height: 1.3;
+        justify-content: center; /* Center content */
     }
     
     .pwa-install-container.collapsed .pwa-install-button {
         width: 45px;
         height: 45px;
         padding: 11px;
+        margin: 0 auto; /* Center when collapsed */
     }
     
     .pwa-popup-actions {
@@ -2673,22 +2719,27 @@ body.theme-transitioning::before {
     }
 }
 
-/* Ultra small screens - stack vertically to avoid cramping */
+/* Ultra small screens */
 @media (max-width: 380px) {
     .pwa-install-container {
-        bottom: 100px; /* Position above chatbot */
-        right: 16px; /* Align with chatbot */
-        left: 16px; /* Full width with margins */
+        bottom: 75px; /* Above theme toggle with tighter spacing */
+        left: 12px;
+        right: 12px;
     }
     
     .pwa-install-button {
-        max-width: 100%; /* Use full available width */
+        padding: 10px 14px;
+        font-size: 12px;
+        max-width: none; /* Use full available width */
+        white-space: normal; /* Allow text wrapping */
+        line-height: 1.4;
         justify-content: center; /* Center content */
     }
     
     .pwa-install-container.collapsed .pwa-install-button {
-        width: 45px;
-        height: 45px;
+        width: 40px;
+        height: 40px;
+        padding: 8px;
         margin: 0 auto; /* Center the collapsed button */
     }
 }
@@ -2714,6 +2765,89 @@ body.theme-transitioning::before {
         padding: 10px 16px;
         font-size: 13px;
         max-width: 200px;
+    }
+}
+
+/* PWA Popup Mobile Positioning - Above Theme Toggle Button */
+@media (max-width: 768px) {
+    .pwa-install-popup {
+        position: fixed;
+        top: auto !important;
+        left: 20px !important;
+        right: 20px !important;
+        bottom: 90px !important; /* Position above theme toggle (50px height + 20px spacing + 20px margin) */
+        transform: translateY(20px) scale(0.8) !important;
+        width: auto !important;
+        max-width: none !important;
+        padding: 24px;
+        z-index: 10002; /* Higher z-index for mobile */
+    }
+    
+    .pwa-install-popup.show {
+        transform: translateY(0) scale(1) !important;
+    }
+    
+    .pwa-install-popup-backdrop {
+        z-index: 10001; /* Higher z-index for mobile */
+    }
+}
+
+@media (max-width: 480px) {
+    .pwa-install-popup {
+        left: 16px !important;
+        right: 16px !important;
+        bottom: 80px !important; /* Position above theme toggle (45px height + 16px spacing + 19px margin) */
+        padding: 20px;
+    }
+    
+    .pwa-popup-header {
+        margin-bottom: 16px;
+    }
+    
+    .pwa-popup-title {
+        font-size: 18px;
+    }
+    
+    .pwa-popup-description {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 380px) {
+    .pwa-install-popup {
+        left: 12px !important;
+        right: 12px !important;
+        bottom: 75px !important; /* Position above theme toggle with tighter spacing */
+        padding: 18px;
+    }
+    
+    .pwa-popup-header {
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+    
+    .pwa-popup-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .pwa-popup-title {
+        font-size: 16px;
+    }
+    
+    .pwa-popup-description {
+        font-size: 13px;
+        line-height: 1.4;
+    }
+    
+    .pwa-popup-actions {
+        gap: 10px;
+        margin-top: 16px;
+    }
+    
+    .pwa-popup-btn {
+        padding: 10px 16px;
+        font-size: 13px;
     }
 }
 
@@ -3096,15 +3230,6 @@ body.theme-transitioning::before {
     text-shadow: 0 0 15px rgba(220, 38, 38, 0.2);
 }
 
-@keyframes horrorGlow {
-    0% {
-        filter: drop-shadow(0 0 12px rgba(220, 38, 38, 0.6));
-    }
-    100% {
-        filter: drop-shadow(0 0 20px rgba(220, 38, 38, 0.9));
-    }
-}
-
 [data-theme="horror"] .floating-card {
     background: rgba(26, 15, 15, 0.9);
     border: 1px solid #7f1d1d;
@@ -3116,6 +3241,17 @@ body.theme-transitioning::before {
 [data-theme="horror"] .floating-card i {
     color: #dc2626;
     text-shadow: 0 0 10px #dc2626;
+}
+
+[data-theme="horror"] .floating-card:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 0 30px rgba(255, 50, 50, 0.5);
+}
+
+[data-theme="horror"] .floating-card,
+[data-theme="horror"] .floating-card * {
+    pointer-events: auto !important; /* Ensure they are clickable */
+    animation-play-state: running !important; /* Ensure animations run */
 }
 
 [data-theme="horror"] .project-card,
@@ -3375,7 +3511,7 @@ body.theme-transitioning::before {
     z-index: 10001;
     opacity: 0;
     pointer-events: none;
-    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.265, 1.55);
 }
 
 #crimson-popup.show {
@@ -3397,7 +3533,7 @@ body.theme-transitioning::before {
     font-size: 1.1rem;
     box-shadow: 0 0 40px rgba(139, 0, 0, 0.9),
                 0 0 80px rgba(139, 0, 0, 0.5),
-                inset 0 0 30px rgba(139, 0, 0, 0.4);
+                0 0 100px rgba(220, 38, 38, 0.3);
     backdrop-filter: blur(15px);
     animation: crimsonGlow 2s ease-in-out infinite alternate;
     max-width: 350px;
@@ -3489,23 +3625,6 @@ body.theme-transitioning::before {
     }
 }
 
-/* Mobile responsiveness for popup */
-@media (max-width: 480px) {
-    .crimson-message {
-        padding: 15px 20px;
-        font-size: 1rem;
-        max-width: 280px;
-        margin: 0 20px;
-    }
-    
-    .crimson-icon {
-        width: 50px;
-        height: 50px;
-        margin: 0 auto 12px auto;
-        animation: moonPulseMobile 2s ease-in-out infinite;
-    }
-}
-
 /* Backend Connection Popup */
 .backend-popup {
     position: fixed;
@@ -3586,4 +3705,135 @@ body.theme-transitioning::before {
     .backend-popup-content p {
         font-size: 1rem;
     }
+}
+
+/* Override styles for horror theme */
+[data-theme="horror"] .btn-primary {
+    background: var(--horror-primary);
+    border-color: var(--horror-primary-dark);
+    color: var(--horror-text-primary);
+}
+
+[data-theme="horror"] .btn-primary:hover {
+    background: var(--horror-primary-dark);
+    border-color: var(--horror-primary-dark);
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+}
+
+[data-theme="horror"] .btn-secondary {
+    background: transparent;
+    border-color: var(--horror-accent);
+    color: var(--horror-accent);
+}
+
+[data-theme="horror"] .btn-secondary:hover {
+    background: var(--horror-accent);
+    color: var(--horror-bg);
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
+}
+
+[data-theme="horror"] .btn-accent {
+    background: var(--horror-accent-dark);
+    color: var(--horror-text-primary);
+}
+
+[data-theme="horror"] .btn-accent:hover {
+    background: var(--horror-accent);
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
+}
+
+[data-theme="horror"] .nav-link:hover,
+[data-theme="horror"] .nav-link.active {
+    color: var(--horror-primary);
+    text-shadow: 0 0 8px rgba(220, 38, 38, 0.7);
+}
+
+[data-theme="horror"] .contact-btn {
+    border-color: var(--horror-primary);
+    color: var(--horror-primary);
+}
+
+[data-theme="horror"] .contact-btn:hover {
+    background: var(--horror-primary);
+    color: var(--horror-text-primary);
+}
+
+[data-theme="horror"] .skill-tag:hover {
+    background: var(--horror-primary);
+    color: var(--horror-text-primary);
+    transform: scale(1.1);
+}
+
+[data-theme="horror"] .contact-item:hover {
+    background: var(--horror-primary-dark);
+    color: var(--horror-text-primary);
+}
+
+[data-theme="horror"] .project-link:hover {
+    color: var(--horror-primary);
+}
+
+[data-theme="horror"] .certification-item:hover h4,
+[data-theme="horror"] .publication-item:hover h4 {
+    color: var(--horror-primary);
+}
+
+[data-theme="horror"] .footer-links a:hover {
+    color: var(--horror-primary);
+}
+
+[data-theme="horror"] .quick-question:hover {
+    background-color: var(--horror-primary-dark);
+    color: var(--horror-text-primary);
+}
+
+[data-theme="horror"] .pwa-popup-btn-primary {
+    background: var(--horror-primary);
+}
+
+[data-theme="horror"] .pwa-popup-btn-primary:hover {
+    background: var(--horror-primary-dark);
+}
+
+[data-theme="horror"] .pwa-popup-btn-secondary {
+    background: var(--horror-bg-light);
+    color: var(--horror-text-secondary);
+}
+
+[data-theme="horror"] .pwa-popup-btn-secondary:hover {
+    background: var(--horror-accent-dark);
+}
+
+[data-theme="horror"] .nav-menu .contact-btn:hover {
+    background: #dc2626 !important;
+    border-color: var(--horror-primary) !important;
+    color: var(--horror-text-primary) !important;
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+}
+
+[data-theme="horror"] .chatbot-input .send-btn:hover,
+[data-theme="horror"] #chatbot-send:hover {
+    background: var(--horror-primary);
+    color: var(--horror-text-primary);
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.4);
+}
+
+/* Enforce white borders for all shimmer buttons in horror mode */
+[data-theme="horror"] .btn,
+[data-theme="horror"] .btn-primary,
+[data-theme="horror"] .btn-secondary,
+[data-theme="horror"] .btn-accent,
+[data-theme="horror"] .contact-btn,
+[data-theme="horror"] .nav-menu .contact-btn {
+    border-color: #ffffff !important;
+}
+
+/* Keep borders white on hover as well */
+[data-theme="horror"] .btn:hover,
+[data-theme="horror"] .btn-primary:hover,
+[data-theme="horror"] .btn-secondary:hover,
+[data-theme="horror"] .btn-accent:hover,
+[data-theme="horror"] .contact-btn:hover,
+[data-theme="horror"] .nav-menu .contact-btn:hover {
+    border-color: #ffffff !important;
 }

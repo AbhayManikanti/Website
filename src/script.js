@@ -913,6 +913,7 @@ class PWAInstallController {
         this.deferredPrompt = null;
         this.isInstalled = false;
         this.hasBeenShown = false;
+        this.hasDissolvedToLogo = false; // Track if button has been dissolved
         this.init();
     }
 
@@ -920,15 +921,64 @@ class PWAInstallController {
         this.checkInstallStatus();
         this.setupEventListeners();
         this.setupInstallPromptListener();
+        
+        // Show button immediately on page load
+        this.showInstallButtonImmediately();
+        
         this.schedulePresentationLogic();
         this.checkLogoAvailability();
     }
 
+    showInstallButtonImmediately() {
+        // Force show button instantly, but respect dissolution state
+        console.log('📱 Force showing PWA button immediately on page load');
+        this.showInstallButton();
+        
+        // Start collapse timer for instant animation
+        setTimeout(() => {
+            this.startCollapseTimer();
+        }, 100); // Small delay to ensure button is rendered
+    }
+
+    startCollapseTimer() {
+        const installContainer = document.getElementById('pwa-install-container');
+        let hasCollapsedBefore = localStorage.getItem('pwa-collapsed-before') === 'true';
+        
+        if (!this.hasBeenShown && installContainer && !installContainer.classList.contains('collapsed')) {
+            const collapseTimer = setTimeout(() => {
+                console.log('⏰ Instant collapse timer triggered');
+                console.log('🔍 hasCollapsedBefore:', hasCollapsedBefore);
+                
+                const wasFirstCollapse = !hasCollapsedBefore;
+                installContainer.classList.add('collapsed');
+                
+                // Trigger electric stream animation on first collapse
+                if (wasFirstCollapse) {
+                    console.log('⚡ First collapse detected - triggering electric stream animation!');
+                    hasCollapsedBefore = true;
+                    localStorage.setItem('pwa-collapsed-before', 'true');
+                    this.triggerCollapseAnimation();
+                } else {
+                    console.log('⏭️ Not first collapse, skipping animation');
+                }
+            }, 2000); // Reduced to 2 seconds for faster testing
+        }
+    }
+
     checkInstallStatus() {
-        // Check if app is already installed
+        // Check if app is already installed (via standalone mode)
         if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) {
             this.isInstalled = true;
             this.hideInstallButton();
+            return;
+        }
+
+        // Check if user has previously installed via our button
+        const wasInstalled = localStorage.getItem('pwa-installed');
+        if (wasInstalled === 'true') {
+            this.isInstalled = true;
+            this.hideInstallButton();
+            console.log('📱 PWA was previously installed, hiding button');
             return;
         }
 
@@ -955,19 +1005,27 @@ class PWAInstallController {
         const cancelBtn = document.getElementById('pwa-popup-cancel');
         const installBtn = document.getElementById('pwa-popup-install');
 
-        // Main install button click - show appropriate popup
+        // Main install button click - show popup for all devices
         installButton?.addEventListener('click', () => {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            if (isIOS) {
-                this.showIOSInstallInstructions();
+            const container = document.getElementById('pwa-install-container');
+            
+            // If button is collapsed, expand it instead of showing popup
+            if (container?.classList.contains('collapsed')) {
+                console.log('📱 Expanding collapsed PWA button');
+                container.classList.remove('collapsed');
+                this.trackInstallEvent('expanded_from_collapsed');
+                
+                // Start collapse timer again
+                this.startCollapseTimer();
             } else {
+                // Normal popup behavior
                 this.showInstallPopup();
             }
         });
 
-        // Popup backdrop click - close popup
+        // Popup backdrop click - close popup and dissolve button
         popupBackdrop?.addEventListener('click', () => {
-            this.hideInstallPopup();
+            this.dismissInstallPrompt();
         });
 
         // Cancel button - hide for a week
@@ -994,16 +1052,16 @@ class PWAInstallController {
                     const wasFirstCollapse = !hasCollapsedBefore;
                     installContainer.classList.add('collapsed');
                     
-                    // Trigger red spark animation on first collapse
+                    // Trigger electric stream animation on first collapse
                     if (wasFirstCollapse) {
-                        console.log('🎆 First collapse detected - triggering spark animation!');
+                        console.log('⚡ First collapse detected - triggering electric stream animation!');
                         hasCollapsedBefore = true;
                         localStorage.setItem('pwa-collapsed-before', 'true');
                         this.triggerCollapseAnimation();
                     } else {
                         console.log('⏭️ Not first collapse, skipping animation');
                     }
-                }, 3000); // Reduced to 3 seconds for faster testing
+                }, 5000); // 5 seconds as requested
             } else {
                 console.log('🚫 Collapse timer not started:', { 
                     hasBeenShown: this.hasBeenShown, 
@@ -1153,11 +1211,28 @@ class PWAInstallController {
     }
 
     showInstallButton() {
+        // Don't show button if it has been dissolved to logo
+        if (this.hasDissolvedToLogo) {
+            console.log('⚡ Button already dissolved to logo - staying hidden');
+            return;
+        }
+
         const container = document.getElementById('pwa-install-container');
         if (container) {
+            // Remove hidden class and force instant visibility
             container.classList.remove('hidden');
-            container.style.display = 'block'; // Force display
-            console.log('📱 PWA install button shown');
+            container.style.display = 'block';
+            container.style.opacity = '1';
+            container.style.visibility = 'visible';
+            container.style.transform = 'translateY(0) scale(1)';
+            container.style.transition = 'none'; // Disable transitions for instant appearance
+            
+            // Re-enable transitions after a brief moment for future animations
+            setTimeout(() => {
+                container.style.transition = '';
+            }, 50);
+            
+            console.log('📱 PWA install button shown INSTANTLY');
             console.log('Button classes:', container.className);
             console.log('Button display:', getComputedStyle(container).display);
         } else {
@@ -1169,6 +1244,29 @@ class PWAInstallController {
         const container = document.getElementById('pwa-install-container');
         if (container) {
             container.classList.add('hidden');
+        }
+    }
+
+    hideButtonAfterInstall() {
+        const container = document.getElementById('pwa-install-container');
+        if (container) {
+            console.log('✅ Hiding PWA button permanently after successful install');
+            
+            // Mark as installed
+            this.isInstalled = true;
+            localStorage.setItem('pwa-installed', 'true');
+            localStorage.setItem('pwa-install-time', Date.now().toString());
+            
+            // Hide with animation
+            container.style.transition = 'all 0.5s ease-out';
+            container.style.transform = 'scale(0) translateY(20px)';
+            container.style.opacity = '0';
+            
+            setTimeout(() => {
+                container.classList.add('hidden');
+                container.style.display = 'none';
+                console.log('✅ PWA button permanently hidden after install');
+            }, 500);
         }
     }
 
@@ -1192,8 +1290,9 @@ class PWAInstallController {
         const backdrop = document.getElementById('pwa-popup-backdrop');
         
         if (popup && backdrop) {
-            backdrop.classList.remove('show');
-            popup.classList.remove('show');
+            // Remove both 'show' and 'visible' classes to handle all popup types
+            backdrop.classList.remove('show', 'visible');
+            popup.classList.remove('show', 'visible');
             
             // Restore body scroll
             document.body.style.overflow = '';
@@ -1203,16 +1302,23 @@ class PWAInstallController {
     async triggerInstall() {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         
+        // Always close popup and dissolve button first for immediate UI feedback
+        this.hideInstallPopup();
+        this.flyButtonToLogo();
+        
         if (isIOS) {
-            // iOS doesn't support programmatic installation
-            console.log('📱 iOS detected - showing manual installation instructions');
-            this.showIOSInstallInstructions();
+            console.log('📱 iOS detected - attempting automatic installation');
+            this.tryIOSAutoInstall();
             return;
         }
         
         if (!this.deferredPrompt) {
-            console.warn('No install prompt available');
-            this.showFallbackInstructions();
+            console.warn('No install prompt available - button dismissed');
+            this.trackInstallEvent('no_install_available');
+            // Mark as dismissed like Maybe Later
+            localStorage.setItem('pwa-install-dismissed', 'true');
+            localStorage.setItem('pwa-install-dismissed-time', Date.now().toString());
+            this.hasBeenShown = true;
             return;
         }
 
@@ -1225,25 +1331,34 @@ class PWAInstallController {
             if (result.outcome === 'accepted') {
                 console.log('✅ User accepted the install prompt');
                 this.trackInstallEvent('accepted');
+                // Mark as dismissed since app is now installing
+                localStorage.setItem('pwa-install-dismissed', 'true');
+                localStorage.setItem('pwa-install-dismissed-time', Date.now().toString());
+                this.hasBeenShown = true;
             } else {
                 console.log('❌ User dismissed the install prompt');
-                this.trackInstallEvent('dismissed');
+                this.trackInstallEvent('dismissed_native');
+                // Mark as dismissed like Maybe Later
+                localStorage.setItem('pwa-install-dismissed', 'true');
+                localStorage.setItem('pwa-install-dismissed-time', Date.now().toString());
+                this.hasBeenShown = true;
             }
-            
-            // Hide our UI
-            this.hideInstallPopup();
             
             // Clear the deferred prompt
             this.deferredPrompt = null;
             
         } catch (error) {
             console.error('❌ Install prompt error:', error);
-            this.showFallbackInstructions();
+            this.trackInstallEvent('install_error');
+            // Mark as dismissed like Maybe Later
+            localStorage.setItem('pwa-install-dismissed', 'true');
+            localStorage.setItem('pwa-install-dismissed-time', Date.now().toString());
+            this.hasBeenShown = true;
         }
     }
 
     dismissInstallPrompt() {
-        // Mark as dismissed but not for a week - user can click logo
+        // Mark as dismissed for a week - user can click logo to show again
         localStorage.setItem('pwa-install-dismissed', 'true');
         localStorage.setItem('pwa-install-dismissed-time', Date.now().toString());
         
@@ -1251,7 +1366,7 @@ class PWAInstallController {
         this.hideInstallPopup();
         this.flyButtonToLogo();
         
-        this.trackInstallEvent('dismissed_maybe_later');
+        this.trackInstallEvent('dismissed');
         
         console.log('📱 Install prompt dismissed - button flying to logo');
     }
@@ -1261,125 +1376,67 @@ class PWAInstallController {
         const logo = document.getElementById('nav-logo');
         
         if (container && logo) {
-            console.log('💥 Button exploding into sparks!');
+            console.log('⚡ Button triggering electric stream animation!');
             
-            // Start button explosion animation
-            container.classList.add('exploding');
+            // Start button dissolution animation
+            container.classList.add('collapsing');
             
-            // Create explosion sparks immediately
-            this.createExplosionSparks(container, logo);
+            // Get coordinates for electric stream
+            const buttonRect = container.getBoundingClientRect();
+            const logoRect = logo.getBoundingClientRect();
             
-            // Hide button after explosion
+            const buttonCenterX = buttonRect.left + buttonRect.width / 2;
+            const buttonCenterY = buttonRect.top + buttonRect.height / 2;
+            const logoCenterX = logoRect.left + logoRect.width / 2;
+            const logoCenterY = logoRect.top + logoRect.height / 2;
+            
+            const deltaX = logoCenterX - buttonCenterX;
+            const deltaY = logoCenterY - buttonCenterY;
+            
+            // Create electric stream as button starts dissolving
+            setTimeout(() => {
+                this.createElectricStream(buttonCenterX, buttonCenterY, deltaX, deltaY);
+                // Schedule themed logo pulse when stream is expected to arrive
+                this.pulseLogoByTheme(1000);
+            }, 300); // Start stream as button reaches mid-dissolution
+            
+            // Hide button after dissolution completes
             setTimeout(() => {
                 container.classList.add('hidden');
-                container.classList.remove('exploding');
-                console.log('💥 Button explosion complete');
-            }, 600);
+                container.classList.remove('collapsing');
+                
+                // Force complete invisibility with inline styles
+                container.style.display = 'none';
+                container.style.visibility = 'hidden';
+                container.style.opacity = '0';
+                container.style.pointerEvents = 'none';
+                
+                this.hasDissolvedToLogo = true; // Mark as permanently dissolved
+                // Also set the localStorage flag to prevent timer-based animations
+                localStorage.setItem('pwa-collapsed-before', 'true');
+                console.log('⚡ Button dissolved into electric stream - permanently hidden');
+            }, 800);
             
-            // Make logo clickable after all sparks arrive
+            // Make logo clickable after electric stream arrives
             setTimeout(() => {
                 if (logo) {
                     logo.classList.add('pwa-available');
                     this.setupLogoClickListener();
                     console.log('✨ Logo is now interactive for PWA install');
                 }
-            }, 2000); // After all sparks have traveled
+            }, 2000); // After electric stream has completed
         }
     }
 
-    createExplosionSparks(buttonElement, logoElement) {
-        const buttonRect = buttonElement.getBoundingClientRect();
-        const logoRect = logoElement.getBoundingClientRect();
-        
-        // Button center coordinates
-        const buttonCenterX = buttonRect.left + buttonRect.width / 2;
-        const buttonCenterY = buttonRect.top + buttonRect.height / 2;
-        
-        // Logo center coordinates  
-        const logoCenterX = logoRect.left + logoRect.width / 2;
-        const logoCenterY = logoRect.top + logoRect.height / 2;
-        
-        // Calculate travel distance
-        const deltaX = logoCenterX - buttonCenterX;
-        const deltaY = logoCenterY - buttonCenterY;
-        
-        console.log(`🎆 Creating explosion: ${deltaX}px, ${deltaY}px to logo`);
-        
-        // Create 20 sparks with different timing and paths
-        const sparkCount = 20;
-        let maxArrivalTime = 0;
-        
-        for (let i = 0; i < sparkCount; i++) {
-            setTimeout(() => {
-                const arrivalTime = this.createExplosionSpark(
-                    buttonCenterX, 
-                    buttonCenterY, 
-                    deltaX, 
-                    deltaY, 
-                    i
-                );
-                maxArrivalTime = Math.max(maxArrivalTime, arrivalTime);
-            }, i * 30); // Stagger spark creation
-        }
-        
-        // Trigger red logo pulse when sparks start arriving
-        setTimeout(() => {
-            logoElement.classList.add('impact-flash');
-            console.log('� Red logo pulse as electric sparks arrive!');
-            
-            setTimeout(() => {
-                logoElement.classList.remove('impact-flash');
-            }, 800); // Longer duration for red pulse effect
-        }, 700); // Slightly earlier start to sync better with sparks
-    }
 
-    createExplosionSpark(startX, startY, deltaX, deltaY, index) {
-        const spark = document.createElement('div');
-        spark.className = 'pwa-spark spark-to-logo';
-        
-        // Add some randomness to starting position (explosion spread)
-        const explosionRadius = 40;
-        const angle = (index / 20) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
-        const distance = Math.random() * explosionRadius;
-        
-        const startOffsetX = Math.cos(angle) * distance;
-        const startOffsetY = Math.sin(angle) * distance;
-        
-        spark.style.left = (startX + startOffsetX) + 'px';
-        spark.style.top = (startY + startOffsetY) + 'px';
-        
-        // Random travel time and easing for natural movement
-        const travelTime = 1.0 + Math.random() * 0.8; // 1.0 to 1.8 seconds
-        const delay = Math.random() * 0.3; // 0 to 0.3 seconds delay
-        
-        // Set CSS custom properties for this spark
-        spark.style.setProperty('--spark-target-x', deltaX + 'px');
-        spark.style.setProperty('--spark-target-y', deltaY + 'px');
-        spark.style.setProperty('--spark-duration', travelTime + 's');
-        spark.style.setProperty('--spark-delay', delay + 's');
-        
-        // Different easing for variety
-        const easings = [
-            'cubic-bezier(0.2, 0.8, 0.2, 1)',
-            'cubic-bezier(0.4, 0, 0.2, 1)',
-            'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-        ];
-        spark.style.setProperty('--spark-easing', easings[index % easings.length]);
-        
-        document.body.appendChild(spark);
-        
-        // Remove spark after animation completes
-        const totalTime = (delay + travelTime) * 1000;
-        setTimeout(() => {
-            if (spark.parentNode) {
-                spark.parentNode.removeChild(spark);
-            }
-        }, totalTime + 100);
-        
-        return totalTime;
-    }
 
     triggerCollapseAnimation() {
+        // Don't run if button has already been dissolved
+        if (this.hasDissolvedToLogo) {
+            console.log('⚡ Button already dissolved - skipping timer-based collapse animation');
+            return;
+        }
+
         const installContainer = document.getElementById('pwa-install-container');
         const logo = document.getElementById('nav-logo');
         
@@ -1388,12 +1445,12 @@ class PWAInstallController {
             return;
         }
         
-        console.log('🎆 Triggering electric red spark collapse animation!');
+        console.log('⚡ Triggering electric stream collapse animation!');
         
         // Add collapsing class to start button shrink animation
         installContainer.classList.add('collapsing');
         
-        // Get positions for spark animation
+        // Get positions for electric stream animation
         const containerRect = installContainer.getBoundingClientRect();
         const logoRect = logo.getBoundingClientRect();
         
@@ -1407,106 +1464,295 @@ class PWAInstallController {
         
         console.log('🎯 Animation positions:', { buttonCenterX, buttonCenterY, logoCenterX, logoCenterY });
         
-        // Start spark explosion slightly after button begins shrinking
-        setTimeout(() => {
-            this.createCollapseSparkExplosion(buttonCenterX, buttonCenterY, deltaX, deltaY);
-        }, 200);
-        
-        // Trigger red logo pulse when sparks arrive
-        setTimeout(() => {
-            logo.classList.add('impact-flash');
-            console.log('🔴 Red logo pulse as collapse sparks arrive!');
-            
+        // Start electric stream slightly after button begins shrinking
             setTimeout(() => {
-                logo.classList.remove('impact-flash');
-            }, 800);
-        }, 700);
+                this.createCollapseElectricStream(buttonCenterX, buttonCenterY, deltaX, deltaY);
+                // Schedule themed logo pulse roughly when stream reaches logo
+                this.pulseLogoByTheme(1000);
+            }, 200);
         
-        // Remove collapsing class after animation completes and hide the container
+        // Themed logo pulse timed to stream arrival handled above
+        
+        // Complete cleanup after animation completes
         setTimeout(() => {
-            installContainer.classList.remove('collapsing');
-            installContainer.style.visibility = 'hidden';
-        }, 1200);
+            // Only cleanup if not already dissolved by flyButtonToLogo method
+            if (!this.hasDissolvedToLogo) {
+                // Remove all classes and inline styles completely
+                installContainer.className = 'pwa-install-container hidden';
+                installContainer.removeAttribute('style');
+                
+                // Force complete removal from DOM
+                installContainer.style.display = 'none';
+                installContainer.style.visibility = 'hidden';
+                installContainer.style.opacity = '0';
+                
+                // Mark that we've completed the first animation
+                this.hasCollapsedToLogo = true;
+                
+                console.log('🧹 Complete cleanup: All button CSS and classes removed');
+            } else {
+                console.log('⚡ Button already dissolved by flyButtonToLogo - skipping cleanup');
+            }
+        }, 2000); // Extended time for electric stream animation
     }
 
     // Manual trigger for testing - call this from browser console
-    testSparkAnimation() {
-        console.log('🧪 Testing spark animation manually...');
+    testElectricAnimation() {
+        console.log('🧪 Testing electric stream animation manually...');
         // Reset localStorage to allow animation
         localStorage.removeItem('pwa-collapsed-before');
         // Force trigger animation
         this.triggerCollapseAnimation();
     }
 
-    createCollapseSparkExplosion(startX, startY, deltaX, deltaY) {
-        const sparkCount = 40; // Many more electric sparks!
+    // Test electric stream animation specifically
+    testElectricStream() {
+        console.log('⚡ Testing electric stream animation...');
+        const button = document.getElementById('pwa-install-container');
+        const logo = document.getElementById('nav-logo');
         
-        // Create sparks in waves for more dramatic effect
-        const waves = 3;
-        const sparksPerWave = Math.ceil(sparkCount / waves);
-        
-        for (let wave = 0; wave < waves; wave++) {
-            setTimeout(() => {
-                for (let i = 0; i < sparksPerWave; i++) {
-                    const sparkIndex = wave * sparksPerWave + i;
-                    if (sparkIndex < sparkCount) {
-                        setTimeout(() => {
-                            this.createCollapseSpark(startX, startY, deltaX, deltaY, sparkIndex);
-                        }, i * 15); // Faster spark creation within each wave
-                    }
-                }
-            }, wave * 100); // Waves separated by 100ms
+        if (button && logo) {
+            const buttonRect = button.getBoundingClientRect();
+            const logoRect = logo.getBoundingClientRect();
+            
+            const startX = buttonRect.left + buttonRect.width / 2;
+            const startY = buttonRect.top + buttonRect.height / 2;
+            const deltaX = (logoRect.left + logoRect.width / 2) - startX;
+            const deltaY = (logoRect.top + logoRect.height / 2) - startY;
+            
+            this.createElectricStream(startX, startY, deltaX, deltaY);
         }
     }
 
-    createCollapseSpark(startX, startY, deltaX, deltaY, index) {
-        const spark = document.createElement('div');
-        spark.className = 'pwa-spark spark-to-logo';
+    // Test button dissolution animation - call this from browser console
+    testButtonDissolution() {
+        console.log('⚡ Testing button dissolution into electric stream...');
+        const container = document.getElementById('pwa-install-container');
         
-        // Create explosion pattern but ensure all sparks eventually reach the logo
-        const totalSparks = 40;
-        const angle = (index / totalSparks) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
-        const distance = 20 + Math.random() * 35; // Initial explosion radius
-        
-        const startOffsetX = Math.cos(angle) * distance;
-        const startOffsetY = Math.sin(angle) * distance;
-        
-        spark.style.left = (startX + startOffsetX) + 'px';
-        spark.style.top = (startY + startOffsetY) + 'px';
-        
-        // Varied timing for more natural electric discharge
-        const travelTime = 0.6 + Math.random() * 0.8; // 0.6 to 1.4 seconds
-        const delay = Math.random() * 0.3; // Up to 300ms delay
-        
-        // All sparks must reach the logo - no random deviation
-        // Only add very small trajectory variations for visual interest
-        const trajectoryVariation = 0.02; // 2% maximum deviation
-        const finalDeltaX = deltaX + (Math.random() - 0.5) * Math.abs(deltaX) * trajectoryVariation;
-        const finalDeltaY = deltaY + (Math.random() - 0.5) * Math.abs(deltaY) * trajectoryVariation;
-        
-        spark.style.setProperty('--spark-target-x', finalDeltaX + 'px');
-        spark.style.setProperty('--spark-target-y', finalDeltaY + 'px');
-        spark.style.setProperty('--spark-duration', travelTime + 's');
-        spark.style.setProperty('--spark-delay', delay + 's');
-        
-        // Varied easing for different spark behaviors
-        const easings = [
-            'cubic-bezier(0.25, 0.46, 0.45, 0.94)', // smooth
-            'cubic-bezier(0.4, 0, 0.2, 1)', // material design  
-            'cubic-bezier(0.175, 0.885, 0.32, 1)', // ease out back
-            'cubic-bezier(0.68, -0.55, 0.265, 1.55)' // bouncy (less extreme)
-        ];
-        spark.style.setProperty('--spark-easing', easings[index % easings.length]);
-        
-        document.body.appendChild(spark);
-        
-        const totalTime = (delay + travelTime) * 1000;
-        setTimeout(() => {
-            if (spark.parentNode) {
-                spark.parentNode.removeChild(spark);
-            }
-        }, totalTime + 100);
+        if (container) {
+            // Reset dissolution state for testing
+            this.hasDissolvedToLogo = false;
+            
+            // Make sure button is visible first
+            container.classList.remove('hidden');
+            container.style.display = 'block';
+            container.style.visibility = 'visible';
+            container.style.opacity = '1';
+            
+            // Reset localStorage to ensure we can see the animation
+            localStorage.removeItem('pwa-collapsed-before');
+            localStorage.removeItem('pwa-install-dismissed');
+            
+            // Trigger the dissolution animation
+            setTimeout(() => {
+                this.flyButtonToLogo();
+            }, 500); // Small delay to ensure button is visible
+        } else {
+            console.log('❌ PWA install button not found');
+        }
     }
+
+    // Test PWA popup on mobile - call this from browser console
+    testMobilePopup() {
+        console.log('📱 Testing PWA popup positioning on mobile...');
+        console.log('📱 Screen dimensions:', window.innerWidth + 'x' + window.innerHeight);
+        console.log('📱 User Agent:', navigator.userAgent);
+        
+        // Check if popup elements exist
+        const popup = document.getElementById('pwa-install-popup');
+        const backdrop = document.getElementById('pwa-popup-backdrop');
+        const container = document.getElementById('pwa-install-container');
+        
+        console.log('📱 Elements found:', {
+            popup: !!popup,
+            backdrop: !!backdrop, 
+            container: !!container
+        });
+        
+        // Make sure button is visible first
+        if (container) {
+            container.classList.remove('hidden');
+            container.style.display = 'block';
+            container.style.visibility = 'visible';
+            container.style.opacity = '1';
+            this.hasDissolvedToLogo = false; // Reset dissolution state
+        }
+        
+        // Force show popup regardless of device detection
+        setTimeout(() => {
+            this.showInstallPopup();
+            console.log('📱 PWA popup should now be visible above theme toggle button');
+            
+            // Log popup position after showing
+            if (popup) {
+                const rect = popup.getBoundingClientRect();
+                console.log('📱 Popup position:', rect);
+                console.log('📱 Popup styles:', getComputedStyle(popup));
+            }
+        }, 200);
+    }
+
+    // Force show PWA button for mobile testing - call this from browser console
+    forceMobilePWA() {
+        console.log('📱 Force enabling PWA button for mobile testing...');
+        
+        // Reset all blocking flags
+        this.hasDissolvedToLogo = false;
+        this.isInstalled = false;
+        
+        // Clear localStorage flags
+        localStorage.removeItem('pwa-install-dismissed');
+        localStorage.removeItem('pwa-collapsed-before');
+        
+        // Force show button
+        this.showInstallButton();
+        
+        console.log('📱 PWA button should now be visible. Click it to test popup positioning.');
+        console.log('📱 Or run pwaController.testMobilePopup() to show popup directly.');
+    }
+
+    createCollapseElectricStream(startX, startY, deltaX, deltaY) {
+        // Create ONLY electric stream animation
+        this.createElectricStream(startX, startY, deltaX, deltaY);
+    }
+
+    createElectricStream(startX, startY, deltaX, deltaY) {
+        const streamContainer = document.createElement('div');
+        streamContainer.className = 'electric-stream-container';
+        streamContainer.style.position = 'fixed';
+        streamContainer.style.left = startX + 'px';
+        streamContainer.style.top = startY + 'px';
+        streamContainer.style.width = '1px';
+        streamContainer.style.height = '1px';
+        streamContainer.style.pointerEvents = 'none';
+        streamContainer.style.zIndex = '9999';
+        
+        document.body.appendChild(streamContainer);
+
+        // Create flowing electric particles - more dramatic stream
+        const particleCount = 40; // Increased for more dramatic effect
+        const streamPath = this.calculateStreamPath(0, 0, deltaX, deltaY);
+        
+        // Create multiple streams for more dramatic effect
+        for (let stream = 0; stream < 3; stream++) {
+            setTimeout(() => {
+                for (let i = 0; i < particleCount; i++) {
+                    setTimeout(() => {
+                        this.createStreamParticle(streamContainer, streamPath, i, particleCount, stream);
+                    }, i * 25); // Faster particle release
+                }
+            }, stream * 100); // Multiple streams with slight delays
+        }
+        
+        // Clean up container after animation
+        setTimeout(() => {
+            if (streamContainer.parentNode) {
+                streamContainer.parentNode.removeChild(streamContainer);
+            }
+        }, 2500);
+    }
+
+    calculateStreamPath(startX, startY, deltaX, deltaY) {
+        // Create a curved path for more natural energy flow
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        const midX = deltaX * 0.5 + (Math.random() - 0.5) * distance * 0.2;
+        const midY = deltaY * 0.5 + (Math.random() - 0.5) * distance * 0.2;
+        
+        return {
+            start: { x: startX, y: startY },
+            mid: { x: midX, y: midY },
+            end: { x: deltaX, y: deltaY }
+        };
+    }
+
+   createStreamParticle(container, path, index, total, streamIndex = 0) {
+    const particle = document.createElement('div');
+    particle.className = 'electric-stream-particle';
+    
+    // Vary particle sizes for more dynamic effect
+    const size = 2 + Math.random() * 4;
+    
+    // GET CURRENT THEME
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    
+    // THEME-AWARE COLORS
+    let particleColor, shadowColor;
+    if (currentTheme === 'horror') {
+        // Red colors for horror mode
+        particleColor = 'rgba(220, 38, 38, 0.9)';
+        shadowColor = '220, 38, 38';
+    } else {
+        // Blue colors for light/dark mode  
+        particleColor = 'rgba(59, 130, 246, 0.9)';
+        shadowColor = '59, 130, 246';
+    }
+    
+    // Particle styling with theme-aware colors
+    particle.style.position = 'absolute';
+    particle.style.width = size + 'px';
+    particle.style.height = size + 'px';
+    particle.style.borderRadius = '50%';
+    particle.style.background = particleColor; // Now theme-aware!
+    particle.style.boxShadow = `
+        0 0 ${size * 2}px rgba(${shadowColor}, 0.8), 
+        0 0 ${size * 4}px rgba(${shadowColor}, 0.5),
+        0 0 ${size * 6}px rgba(${shadowColor}, 0.3)
+    `; // Now theme-aware!
+    particle.style.pointerEvents = 'none';
+        
+        // Slight random offset for multiple streams
+        const streamOffset = streamIndex * 10;
+        particle.style.filter = `brightness(${1 + streamIndex * 0.2})`;
+        
+        container.appendChild(particle);
+        
+        // Animate along curved path
+        this.animateParticleAlongPath(particle, path, index, total, streamOffset);
+    }
+
+    animateParticleAlongPath(particle, path, index, total, streamOffset = 0) {
+        const duration = 800 + Math.random() * 400; // Faster: 0.8-1.2 seconds
+        const startTime = performance.now();
+        
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Quadratic bezier curve interpolation with stream offset
+            const t = progress;
+            const offsetX = Math.sin(progress * Math.PI * 2) * streamOffset * 0.3;
+            const offsetY = Math.cos(progress * Math.PI * 2) * streamOffset * 0.2;
+            
+            const x = (1 - t) * (1 - t) * path.start.x + 
+                     2 * (1 - t) * t * (path.mid.x + offsetX) + 
+                     t * t * path.end.x;
+            const y = (1 - t) * (1 - t) * path.start.y + 
+                     2 * (1 - t) * t * (path.mid.y + offsetY) + 
+                     t * t * path.end.y;
+            
+            particle.style.left = x + 'px';
+            particle.style.top = y + 'px';
+            
+            // Enhanced fade and scale effect with electric pulse
+            const fadeProgress = progress > 0.8 ? (1 - (progress - 0.8) / 0.2) : 1;
+            const pulseScale = 1 + Math.sin(progress * Math.PI * 8) * 0.3;
+            particle.style.opacity = fadeProgress;
+            particle.style.transform = `scale(${(0.5 + fadeProgress * 0.5) * pulseScale})`;
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                // Remove particle
+                if (particle.parentNode) {
+                    particle.parentNode.removeChild(particle);
+                }
+            }
+        };
+        
+        requestAnimationFrame(animate);
+    }
+
+
 
     setupLogoClickListener() {
         const logo = document.getElementById('nav-logo');
@@ -1609,45 +1855,139 @@ class PWAInstallController {
         backdrop.classList.add('visible');
         popup.classList.add('visible');
         
-        // Handle close
+        // Handle close - use same functionality as Maybe Later
         const gotItBtn = popup.querySelector('#ios-got-it');
-        const closeModal = () => {
-            backdrop.classList.remove('visible');
-            popup.classList.remove('visible');
-        };
         
-        gotItBtn?.addEventListener('click', closeModal);
-        backdrop?.addEventListener('click', closeModal);
+        gotItBtn?.addEventListener('click', () => {
+            this.dismissInstallPrompt();
+        });
+        backdrop?.addEventListener('click', () => {
+            this.dismissInstallPrompt();
+        });
         
         console.log('📱 iOS install instructions shown');
     }
 
+    tryIOSAutoInstall() {
+        console.log('🚀 Attempting iOS auto-installation...');
+        
+        // Popup already hidden by triggerInstall()
+        
+        // Try multiple methods for iOS installation
+        
+        // Method 1: Check if we can trigger Share Sheet with "Add to Home Screen"
+        if (navigator.share) {
+            console.log('📱 Attempting Web Share API approach...');
+            try {
+                navigator.share({
+                    title: 'Abhay\'s Portfolio',
+                    text: 'Add Abhay\'s Portfolio to your home screen',
+                    url: window.location.href
+                }).then(() => {
+                    console.log('✅ Share sheet opened - user can add to home screen');
+                    this.trackInstallEvent('ios_share_opened');
+                    // Mark as dismissed since user interacted with install
+                    localStorage.setItem('pwa-install-dismissed', 'true');
+                    localStorage.setItem('pwa-install-dismissed-time', Date.now().toString());
+                    this.hasBeenShown = true;
+                }).catch(err => {
+                    console.log('ℹ️ Share cancelled or failed, falling back...');
+                    this.fallbackIOSInstall();
+                });
+                return;
+            } catch (error) {
+                console.log('❌ Web Share API failed:', error);
+            }
+        }
+        
+        // Method 2: Show optimized iOS installation flow
+        console.log('📱 Showing optimized iOS installation experience...');
+        this.showIOSSuccessMessage();
+    }
+    
+    showIOSSuccessMessage() {
+        // Create a success overlay
+        const successOverlay = document.createElement('div');
+        successOverlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        `;
+        
+        successOverlay.innerHTML = `
+            <div style="
+                background: var(--card-bg);
+                border-radius: 16px;
+                padding: 32px;
+                text-align: center;
+                max-width: 320px;
+                margin: 20px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            ">
+                <div style="font-size: 48px; margin-bottom: 16px;">📱</div>
+                <h3 style="margin: 0 0 12px 0; color: var(--text-primary);">Add to Home Screen</h3>
+                <p style="margin: 0 0 20px 0; color: var(--text-secondary); line-height: 1.5;">
+                    Tap the <strong>Share button ↗️</strong> at the bottom of Safari, then select <strong>"Add to Home Screen"</strong> to install the app.
+                </p>
+                <button onclick="window.pwaController.dismissInstallPrompt(); this.parentElement.parentElement.remove()" style="
+                    background: var(--primary-color);
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    cursor: pointer;
+                ">Got it!</button>
+            </div>
+        `;
+        
+        document.body.appendChild(successOverlay);
+        
+        // Fade in
+        setTimeout(() => {
+            successOverlay.style.opacity = '1';
+        }, 10);
+        
+        // Auto remove after 10 seconds
+        setTimeout(() => {
+            if (successOverlay.parentElement) {
+                successOverlay.style.opacity = '0';
+                setTimeout(() => successOverlay.remove(), 300);
+            }
+        }, 10000);
+        
+        this.trackInstallEvent('ios_success_shown');
+        
+        // Hide PWA button after showing iOS instructions (assume user will install)
+        setTimeout(() => {
+            this.hideButtonAfterInstall();
+        }, 3000); // Give user time to read instructions
+    }
+    
+    fallbackIOSInstall() {
+        console.log('📱 Using fallback iOS installation method...');
+        this.showIOSInstallInstructions();
+    }
+
     showFallbackInstructions() {
-        // Show browser-specific instructions for manual installation
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        const isAndroid = /Android/.test(navigator.userAgent);
+        // Close popup and dissolve button when install isn't available
+        console.log('📱 No install prompt available - closing popup and dissolving button');
         
-        let instructions = '';
+        // Hide popup and make button disappear
+        this.hideInstallPopup();
+        this.flyButtonToLogo();
         
-        if (isIOS) {
-            instructions = 'To install: Tap the Share button and select "Add to Home Screen"';
-        } else if (isAndroid) {
-            instructions = 'To install: Tap the menu button and select "Add to Home Screen" or "Install"';
-        } else {
-            instructions = 'To install: Look for the install button in your browser\'s address bar';
-        }
-        
-        // Update popup content with instructions
-        const popupContent = document.querySelector('.pwa-popup-content p');
-        if (popupContent) {
-            popupContent.textContent = instructions;
-        }
-        
-        // Hide the install button in popup, show only cancel
-        const installBtn = document.getElementById('pwa-popup-install');
-        if (installBtn) {
-            installBtn.style.display = 'none';
-        }
+        // Track the event
+        this.trackInstallEvent('no_install_available');
     }
 
     trackInstallEvent(action) {
@@ -1683,6 +2023,19 @@ class PWAInstallController {
     isInstallAvailable() {
         return !!this.deferredPrompt && !this.isInstalled;
     }
+
+    // Trigger a short, theme-aware pulse on the logo when energy reaches it
+    pulseLogoByTheme(delayMs = 0) {
+        const logo = document.getElementById('nav-logo');
+        if (!logo) return;
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const cls = currentTheme === 'horror' ? 'impact-flash-red' : 'impact-flash-blue';
+        setTimeout(() => {
+            logo.classList.add(cls);
+            setTimeout(() => logo.classList.remove(cls), 900);
+            console.log('⚡ Logo pulse triggered:', cls);
+        }, delayMs);
+    }
 }
 
 // Initialize application
@@ -1702,7 +2055,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Make PWA controller globally accessible for testing
         window.pwaController = pwa;
         console.log('🧪 PWA Controller available as window.pwaController');
-        console.log('🧪 Type "pwaController.testSparkAnimation()" in console to test sparks!');
+        console.log('🧪 Type "pwaController.testButtonDissolution()" in console to test button dissolution!');
+        console.log('⚡ Type "pwaController.testElectricStream()" in console to test just the electric stream!');
+        console.log('📱 Type "pwaController.testMobilePopup()" in console to test mobile popup positioning!');
+        console.log('📱 Type "pwaController.forceMobilePWA()" in console to force show PWA button on mobile!');
+        console.log('⏰ PWA button auto-collapses after 5 seconds, click to expand again!');
         
         console.log('Portfolio website initialized successfully');
     } catch (error) {
@@ -1899,6 +2256,82 @@ function showUpdateNotification() {
             }, 300);
         }
     }, 10000);
+}
+
+// Floating Cards Animation Controller
+class FloatingCardsController {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        // Wait for GSAP to be available
+        if (typeof gsap !== 'undefined') {
+            this.initFloatingCardAnimations();
+        } else {
+            // Wait for GSAP to load
+            this.waitForGsap();
+        }
+    }
+
+    waitForGsap() {
+        let attempts = 0;
+        const maxAttempts = 50; // 5 seconds
+        
+        const checkGsap = () => {
+            attempts++;
+            if (typeof gsap !== 'undefined') {
+                this.initFloatingCardAnimations();
+            } else if (attempts < maxAttempts) {
+                setTimeout(checkGsap, 100);
+            } else {
+                console.warn('GSAP not loaded, skipping floating card animations');
+            }
+        };
+        
+        checkGsap();
+    }
+
+    initFloatingCardAnimations() {
+        try {
+            console.log('🎭 Initializing floating card animations with GSAP');
+            
+            // Floating cards animation
+            gsap.from('.floating-card', {
+                scale: 0,
+                rotation: 180,
+                duration: 1,
+                stagger: 0.3,
+                ease: 'back.out(1.7)',
+                delay: 0.5
+            });
+
+            // Add continuous floating animation
+            gsap.to('.floating-card', {
+                y: 'random(-20, 20)',
+                rotation: 'random(-5, 5)',
+                duration: 'random(2, 4)',
+                ease: 'power1.inOut',
+                repeat: -1,
+                yoyo: true,
+                delay: 'random(0, 2)'
+            });
+
+            console.log('✨ Floating card animations initialized successfully');
+        } catch (error) {
+            console.error('Error initializing floating card animations:', error);
+        }
+    }
+}
+
+// Initialize floating cards when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        new FloatingCardsController();
+    });
+} else {
+    // DOM already loaded
+    new FloatingCardsController();
 }
 
 // Error handling
