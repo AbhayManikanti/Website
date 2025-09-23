@@ -55,46 +55,31 @@
 
     <!-- Structured Data: Organization (for Logo), WebSite, and Person -->
     <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
     {
-        "@context": "https://schema.org",
-        "@graph": [
-            {
-                "@type": "Organization",
-                "@id": "https://www.abhaymanikanti.com/#org",
-                "name": "Abhay Sreenath Manikanti",
-                "url": "https://www.abhaymanikanti.com",
-                "logo": {
-                    "@type": "ImageObject",
-                    "url": "https://www.abhaymanikanti.com/ico.png"
-                },
-                "sameAs": [
-                    "https://www.linkedin.com/in/abhay-manikanti-504a6b1b3",
-                    "https://github.com/abhaymanikanti"
-                ]
-            },
-            {
-                "@type": "WebSite",
-                "@id": "https://www.abhaymanikanti.com/#website",
-                "url": "https://www.abhaymanikanti.com",
-                "name": "Abhay Portfolio",
-                "publisher": { "@id": "https://www.abhaymanikanti.com/#org" }
-            },
-            {
-                "@type": "Person",
-                "@id": "https://www.abhaymanikanti.com/#person",
-                "name": "Abhay Sreenath Manikanti",
-                "url": "https://www.abhaymanikanti.com",
-                "jobTitle": "AI & RPA Specialist",
-                "image": "https://www.abhaymanikanti.com/ico.png",
-                "sameAs": [
-                    "https://www.linkedin.com/in/abhay-manikanti-504a6b1b3",
-                    "https://github.com/abhaymanikanti"
-                ],
-                "worksFor": { "@id": "https://www.abhaymanikanti.com/#org" }
-            }
-        ]
+      "@type": "WebSite",
+      "@id": "https://www.abhaymanikanti.com/#website",
+      "url": "https://www.abhaymanikanti.com",
+      "name": "Abhay Portfolio",
+      "publisher": { "@id": "https://www.abhaymanikanti.com/#person" }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://www.abhaymanikanti.com/#person",
+      "name": "Abhay Sreenath Manikanti",
+      "url": "https://www.abhaymanikanti.com",
+      "jobTitle": "AI & RPA Specialist",
+      "image": "https://www.abhaymanikanti.com/logo.png",
+      "sameAs": [
+        "https://www.linkedin.com/in/abhay-manikanti-504a6b1b3",
+        "https://github.com/abhaymanikanti"
+      ]
     }
-    </script>
+  ]
+}
+</script>
 </head>
 
 <body>
