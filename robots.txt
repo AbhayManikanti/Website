@@ -1,0 +1,6 @@
+# Allow all crawlers full access to the entire site.
+User-agent: *
+Allow: /
+
+# Provide the location of the sitemap.
+Sitemap: https://www.abhaymanikanti.com/sitemap.xml
