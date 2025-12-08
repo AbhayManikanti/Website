@@ -433,6 +433,7 @@ class ChatBot {
         this.isOpen = false;
         // Check if user has ever sent a message (not just opened chatbot)
         this.hasUsedChatbot = false;
+        this.coldStartTriggered = false;
         try {
             this.hasUsedChatbot = localStorage.getItem('chatbot-used') === 'true';
         } catch (e) {
@@ -440,6 +441,27 @@ class ChatBot {
         }
         this.apiUrl = 'https://fastapi-backend-925151288978.asia-southeast1.run.app/ask';
         this.init();
+    }
+
+    // Trigger cold start of Google Cloud Run backend
+    triggerColdStart() {
+        if (this.coldStartTriggered) return;
+        this.coldStartTriggered = true;
+        
+        console.log('🔥 Triggering Cloud Run cold start...');
+        
+        // Send a lightweight request to wake up the backend
+        fetch(this.apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: 'ping' })
+        }).then(() => {
+            console.log('✅ Cloud Run backend is warming up');
+        }).catch((error) => {
+            console.log('⚠️ Cold start ping sent (error expected if CORS blocks preflight):', error.message);
+        });
     }
 
     init() {
@@ -515,6 +537,9 @@ class ChatBot {
         if (this.isOpen) {
             container.classList.add('open');
             document.getElementById('chatbot-message-input')?.focus();
+            
+            // Trigger cold start when chat is opened
+            this.triggerColdStart();
             
             // Show backend connection popup if user has never sent a message
             if (!this.hasUsedChatbot) {
