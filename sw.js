@@ -1,9 +1,9 @@
 // Service Worker for Abhay Manikanti Portfolio
-// Version: 1.1.0 - Google-optimized
+// Version: 3.0.0 - Network-first for fresh content
 
-const CACHE_NAME = 'abhay-portfolio-v1-1';
-const STATIC_CACHE_NAME = 'abhay-static-v1-1';
-const DYNAMIC_CACHE_NAME = 'abhay-dynamic-v1-1';
+const CACHE_NAME = 'abhay-portfolio-v3-0';
+const STATIC_CACHE_NAME = 'abhay-static-v3-0';
+const DYNAMIC_CACHE_NAME = 'abhay-dynamic-v3-0';
 
 // Assets to cache immediately on install
 const STATIC_ASSETS = [
@@ -13,7 +13,7 @@ const STATIC_ASSETS = [
   '/src/script.js',
   '/ico.png',
   '/src/project1.jpeg',
-  '/src/project2.png',
+  '/src/abhay.png',
   '/bloodmoon.png',
   '/Abhay Sreenath Manikanti - Artificial Intelligence Intern Resume.pdf',
   '/Advanced Certification in Data Science and AI from IIT Madras.pdf',
@@ -29,18 +29,15 @@ const NETWORK_FIRST_URLS = [
   'https://fastapi-backend-925151288978.asia-southeast1.run.app/'
 ];
 
-// Cache-first resources (for static assets)
+// Cache-first resources (for static assets) - DISABLED to always get fresh content
 const CACHE_FIRST_PATTERNS = [
-  /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/,
-  /\.(?:css|js)$/,
-  /\.(?:pdf)$/,
   /fonts\.googleapis\.com/,
   /cdnjs\.cloudflare\.com/
 ];
 
 // Install event - cache static assets
 self.addEventListener('install', event => {
-  console.log('[SW] Installing service worker...');
+  console.log('[SW] Installing service worker v3.0.0...');
   
   event.waitUntil(
     caches.open(STATIC_CACHE_NAME)
@@ -53,23 +50,24 @@ self.addEventListener('install', event => {
       })
       .then(() => {
         console.log('[SW] Static assets cached successfully');
-        return self.skipWaiting(); // Force activation of new SW
+        return self.skipWaiting(); // Force activation of new SW immediately
       })
       .catch(error => {
         console.error('[SW] Failed to cache static assets:', error);
+        return self.skipWaiting(); // Still skip waiting even on error
       })
   );
 });
 
-// Activate event - clean up old caches
+// Activate event - clean up ALL old caches
 self.addEventListener('activate', event => {
-  console.log('[SW] Activating service worker...');
+  console.log('[SW] Activating service worker v3.0.0...');
   
   event.waitUntil(
     caches.keys()
       .then(cacheNames => {
         const deletePromises = cacheNames.map(cacheName => {
-          // Delete old caches
+          // Delete ALL old caches that don't match current version
           if (cacheName !== STATIC_CACHE_NAME && 
               cacheName !== DYNAMIC_CACHE_NAME && 
               cacheName !== CACHE_NAME) {
@@ -198,31 +196,27 @@ async function cacheFirst(request) {
   }
 }
 
-// Stale while revalidate strategy
+// Stale while revalidate strategy - Now NETWORK FIRST for fresher content
 async function staleWhileRevalidate(request) {
-  const cachedResponse = await caches.match(request);
-  
-  // Always try to fetch in background
-  const fetchPromise = fetch(request)
-    .then(networkResponse => {
-      if (networkResponse.ok) {
-        const cache = caches.open(DYNAMIC_CACHE_NAME);
-        cache.then(c => c.put(request.clone(), networkResponse.clone()));
-      }
-      return networkResponse;
-    })
-    .catch(error => {
-      console.warn('[SW] Background fetch failed:', request.url, error);
-    });
-  
-  // Return cached version immediately if available
-  if (cachedResponse) {
-    console.log('[SW] Serving from cache (stale):', request.url);
-    return cachedResponse;
+  // Try network first for HTML pages to always get fresh content
+  try {
+    const networkResponse = await fetch(request);
+    if (networkResponse.ok) {
+      const cache = await caches.open(DYNAMIC_CACHE_NAME);
+      cache.put(request.clone(), networkResponse.clone());
+      console.log('[SW] Serving fresh from network:', request.url);
+    }
+    return networkResponse;
+  } catch (error) {
+    console.warn('[SW] Network failed, trying cache:', request.url);
+    // Fallback to cache if network fails
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      console.log('[SW] Serving from cache (offline):', request.url);
+      return cachedResponse;
+    }
+    throw error;
   }
-  
-  // Wait for network if no cache
-  return await fetchPromise;
 }
 
 // Handle fetch errors with appropriate fallbacks
