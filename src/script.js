@@ -439,7 +439,7 @@ class ChatBot {
         } catch (e) {
             console.warn('LocalStorage not available, treating as first time');
         }
-        this.apiUrl = 'https://fastapi-backend-925151288978.asia-southeast1.run.app/ask';
+        this.apiUrl = 'https://ai-chat-backend-livid.vercel.app/ask';
         this.init();
     }
 
