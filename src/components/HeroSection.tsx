@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Mail, Linkedin, Download, Brain, Bot, BarChart3 } from "lucide-react";
 
-const transition = { duration: 0.5, ease: [0.2, 0, 0, 1] };
+const transition = { duration: 0.5, ease: [0.2, 0, 0, 1] as const };
 
 const stats = [
   { value: "£6K+", label: "Cost Savings" },
